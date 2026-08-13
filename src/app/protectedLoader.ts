@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../utils/supabase";
 
 export default async function protectedLoader({ request }: { request: Request }) {
   const { data, error } = await supabase.auth.getSession();
