@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(240 60% 99%);
+  --color-secondary: hsl(19 100% 61%);
+  --color-accent: hsl(0 88% 30%);
+  --color-text: hsl(221 68% 6%);
+}
