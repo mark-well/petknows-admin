@@ -5,4 +5,7 @@
   --color-secondary: hsl(19 100% 61%);
   --color-accent: hsl(0 88% 30%);
   --color-text: hsl(221 68% 6%);
+
+  --font-sora: "Sora", sans-serif;
+  --font-inter: "Inter", sans-serif;
 }

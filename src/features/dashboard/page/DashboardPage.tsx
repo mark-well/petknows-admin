@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { useAuth } from "../../../auth/providers/useAuth";
+import { Helmet } from "react-helmet-async";
 
 function DashboardPage() {
   const { signOut, loading } = useAuth();
@@ -16,11 +17,16 @@ function DashboardPage() {
 
   if (loading) return <div>Loading...</div>;
   return (
-    <div>
-      <div>Dashboard Page</div>
-      <div>This is protected</div>
-      <button onClick={handleSignout}>Log Out</button>
-    </div>
+    <>
+      <Helmet>
+        <title>PetKnows Admin</title>
+      </Helmet>
+      <div>
+        <div>Dashboard Page</div>
+        <div>This is protected</div>
+        <button onClick={handleSignout}>Log Out</button>
+      </div>
+    </>
   );
 }
 

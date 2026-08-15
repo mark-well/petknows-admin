@@ -110,6 +110,7 @@ code {
   background: var(--code-bg);
 } */
 
+@import "./fonts.css";
 @import "./tailwind.css";
 
 #root {

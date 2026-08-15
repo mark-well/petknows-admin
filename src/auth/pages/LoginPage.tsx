@@ -1,36 +1,44 @@
 import { useState } from "react";
 import { useAuth } from "../providers/useAuth";
 import { Link, useNavigate } from "react-router";
+import { Helmet } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import type { SigninInputs } from "../types";
 
 function LoginPage() {
   const { signIn, loading } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors: formErrors },
+  } = useForm<SigninInputs>();
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
+  const onSubmit = async (data: SigninInputs) => {
+    setGeneralError(null);
 
     try {
-      await signIn(email, password);
+      await signIn(data.email, data.password);
       navigate("/dashboard");
     } catch (e) {
       if (e instanceof Error) {
-        setError(e.message);
+        setGeneralError(e.message);
       }
     }
   };
 
   return (
     <>
+      <Helmet>
+        <title>Sign In</title>
+      </Helmet>
       <div className="w-full min-h-dvh flex flex-col text-base">
-        <div className="w-full bg-secondary absolute h-91 -z-10"></div>
+        <div className="w-full bg-secondary absolute h-48 -z-10"></div>
 
         <main className="flex flex-1 justify-center items-center w-full">
           <div className="bg-white flex flex-col justify-center items-center w-116 min-h-116 border rounded-sm border-gray-300 shadow-md gap-y-8 px-16">
-            <form onSubmit={(e) => handleSubmit(e)} className="flex flex-col gap-y-12 w-full">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-12 w-full">
               <div className="logo flex flex-col gap-y-4 items-center w-full">
                 <img src="/logo.png" width="64" height="64" alt="petknows logo" />
                 <div>
@@ -38,25 +46,21 @@ function LoginPage() {
                     <h1 className="uppercase text-2xl text-secondary">Petknows</h1>
                     <h2 className="uppercase text-gray-600">Admin</h2>
                   </div>
-                  {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                  {generalError && <p className="text-sm text-red-600 text-center">{generalError}</p>}
                 </div>
               </div>
               <div className="fields flex flex-col gap-y-13">
                 <input
-                  type="text"
-                  name="email"
+                  type="email"
                   placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border-b-2 outline-none border-gray-300"
+                  {...register("email", { required: true })}
+                  className={`${formErrors.email ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
                 />
                 <input
                   type="password"
-                  name="password"
                   placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border-b-2 outline-none border-gray-300"
+                  {...register("password", { required: true })}
+                  className={`${formErrors.password ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none `}
                 />
               </div>
               <input
