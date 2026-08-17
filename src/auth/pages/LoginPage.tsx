@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../providers/useAuth";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import type { SigninInputs } from "../types";
@@ -14,13 +14,14 @@ function LoginPage() {
   } = useForm<SigninInputs>();
   const [generalError, setGeneralError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [params] = useSearchParams();
 
   const onSubmit = async (data: SigninInputs) => {
     setGeneralError(null);
 
     try {
       await signIn(data.email, data.password);
-      navigate("/dashboard");
+      navigate(params.get("redirectTo") || "/");
     } catch (e) {
       if (e instanceof Error) {
         setGeneralError(e.message);

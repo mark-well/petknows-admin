@@ -1,19 +1,8 @@
-import { useNavigate } from "react-router";
 import { useAuth } from "../../../auth/providers/useAuth";
 import { Helmet } from "react-helmet-async";
 
 function DashboardPage() {
-  const { signOut, loading } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignout = async () => {
-    try {
-      await signOut();
-      navigate("/");
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const { loading } = useAuth();
 
   if (loading) return <div>Loading...</div>;
   return (
@@ -21,10 +10,8 @@ function DashboardPage() {
       <Helmet>
         <title>PetKnows Admin</title>
       </Helmet>
-      <div>
-        <div>Dashboard Page</div>
-        <div>This is protected</div>
-        <button onClick={handleSignout}>Log Out</button>
+      <div className="w-full min-h-dvh">
+        <h1>Dashboard</h1>
       </div>
     </>
   );
