@@ -16,8 +16,8 @@ PetKnows is a pet registration and identification system developed by **Merto, M
 
 ## Tech Stack
 
-- React / React Native
-- Supabase
+![Static Badge](https://img.shields.io/badge/React-gray?style=plastic&logo=react&link=https%3A%2F%2Freactnative.dev%2F&link=https%3A%2F%2Freactnative.dev%2F)
+![Static Badge](https://img.shields.io/badge/Supabase-gray?style=plastic&logo=supabase&link=https%3A%2F%2Fsupabase.com%2F&link=https%3A%2F%2Fsupabase.com%2F)
 
 ## Contributors
 
