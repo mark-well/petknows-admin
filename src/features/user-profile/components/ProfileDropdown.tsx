@@ -50,7 +50,7 @@ function ProfileDropdown({ onClose }: Props) {
         className="bg-primary animate-in fade-in slide-in-from-top-5 absolute top-14 right-12 z-20 flex w-64 flex-col gap-2 rounded-sm border-2 border-gray-300 p-4 shadow-sm duration-200"
       >
         <div className="flex items-center gap-x-2">
-          <ProfileIcon size="w-8 h-8" />
+          <ProfileIcon className="h-8 w-8" />
           <div className="flex flex-col">
             <p className="text-text text-sm">
               {userProfile?.first_name + " " + userProfile?.last_name}

@@ -34,20 +34,34 @@ function LoginPage() {
       <Helmet>
         <title>Sign In</title>
       </Helmet>
-      <div className="w-full min-h-dvh flex flex-col text-base">
-        <div className="w-full bg-secondary absolute h-48 -z-10"></div>
+      <div className="flex min-h-dvh w-full flex-col text-base">
+        <div className="bg-secondary absolute -z-10 h-48 w-full"></div>
 
-        <main className="flex flex-1 justify-center items-center w-full">
-          <div className="bg-white flex flex-col justify-center items-center w-116 min-h-116 border rounded-sm border-gray-300 shadow-md gap-y-8 px-16">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-12 w-full">
-              <div className="logo flex flex-col gap-y-4 items-center w-full">
-                <img src="/logo.png" width="64" height="64" alt="petknows logo" />
+        <main className="flex w-full flex-1 items-center justify-center">
+          <div className="flex min-h-116 w-116 flex-col items-center justify-center gap-y-8 rounded-sm border border-gray-300 bg-white px-16 shadow-md">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex w-full flex-col gap-y-12"
+            >
+              <div className="logo flex w-full flex-col items-center gap-y-4">
+                <img
+                  src="/logo.png"
+                  width="64"
+                  height="64"
+                  alt="petknows logo"
+                />
                 <div>
-                  <div className="flex gap-x-2 justify-center items-center">
-                    <h1 className="uppercase text-2xl text-secondary">Petknows</h1>
-                    <h2 className="uppercase text-gray-600">Admin</h2>
+                  <div className="flex items-center justify-center gap-x-2">
+                    <h1 className="text-secondary text-2xl uppercase">
+                      Petknows
+                    </h1>
+                    <h2 className="text-gray-600 uppercase">Admin</h2>
                   </div>
-                  {generalError && <p className="text-sm text-red-600 text-center">{generalError}</p>}
+                  {generalError && (
+                    <p className="text-center text-sm text-red-600">
+                      {generalError}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="fields flex flex-col gap-y-13">
@@ -61,27 +75,32 @@ function LoginPage() {
                   type="password"
                   placeholder="Password"
                   {...register("password", { required: true })}
-                  className={`${formErrors.password ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none `}
+                  className={`${formErrors.password ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
                 />
               </div>
               <input
-                className="bg-accent hover:bg-[hsl(0_88%_40%)] disabled:bg-gray-300 transition-colors duration-100 text-white uppercase rounded-sm shadow-md py-1 cursor-pointer"
+                className="bg-accent cursor-pointer rounded-sm py-1 text-white uppercase shadow-md transition-colors duration-100 hover:bg-[hsl(0_88%_40%)] disabled:bg-gray-300"
                 type="submit"
                 value="Login"
                 disabled={loading}
               />
             </form>
             <Link to="/forgot-password">
-              <p className="text-accent cursor-pointer hover:underline">Forgot password?</p>
+              <p className="text-accent cursor-pointer hover:underline">
+                Forgot password?
+              </p>
             </Link>
           </div>
         </main>
 
-        <footer className="flex pb-8 px-8 gap-y-4 flex-col items-center">
-          <p className="max-w-191 text-center text-text uppercase">© PETKNOWS 2026</p>
-          <p className="max-w-191 text-center text-text">
-            Petknows is a pet registration and identification system developed by Merto, Avila, and Fernandez, students
-            of Laguna State Polytechnic University – Siniloan Campus.
+        <footer className="flex flex-col items-center gap-y-4 px-8 pb-8">
+          <p className="text-text max-w-191 text-center uppercase">
+            © PETKNOWS 2026
+          </p>
+          <p className="text-text max-w-191 text-center">
+            Petknows is a pet registration and identification system developed
+            by Merto, Avila, and Fernandez, students of Laguna State Polytechnic
+            University &#45; Siniloan Campus.
           </p>
         </footer>
       </div>

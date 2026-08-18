@@ -170,6 +170,7 @@ export type Database = {
           name: string | null
           pet_type: string | null
           place_of_registration: string | null
+          public_id: string
           status: string | null
           user_id: string | null
         }
@@ -182,6 +183,7 @@ export type Database = {
           name?: string | null
           pet_type?: string | null
           place_of_registration?: string | null
+          public_id?: string
           status?: string | null
           user_id?: string | null
         }
@@ -194,6 +196,7 @@ export type Database = {
           name?: string | null
           pet_type?: string | null
           place_of_registration?: string | null
+          public_id?: string
           status?: string | null
           user_id?: string | null
         }
@@ -223,6 +226,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin_at: string | null
           barangay_id: string | null
           birth_date: string | null
           city_id: string | null
@@ -233,8 +237,10 @@ export type Database = {
           last_name: string | null
           province_id: string | null
           role: Database["public"]["Enums"]["user_roles"]
+          sex: Database["public"]["Enums"]["sex"]
         }
         Insert: {
+          admin_at?: string | null
           barangay_id?: string | null
           birth_date?: string | null
           city_id?: string | null
@@ -245,8 +251,10 @@ export type Database = {
           last_name?: string | null
           province_id?: string | null
           role?: Database["public"]["Enums"]["user_roles"]
+          sex?: Database["public"]["Enums"]["sex"]
         }
         Update: {
+          admin_at?: string | null
           barangay_id?: string | null
           birth_date?: string | null
           city_id?: string | null
@@ -257,8 +265,16 @@ export type Database = {
           last_name?: string | null
           province_id?: string | null
           role?: Database["public"]["Enums"]["user_roles"]
+          sex?: Database["public"]["Enums"]["sex"]
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_admin_at_fkey"
+            columns: ["admin_at"]
+            isOneToOne: false
+            referencedRelation: "mao"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_barangay_id_fkey"
             columns: ["barangay_id"]
@@ -316,6 +332,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_age: { Args: { date_of_birth: string }; Returns: number }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       get_species_counts:
         | {
@@ -334,6 +351,7 @@ export type Database = {
           }
     }
     Enums: {
+      sex: "Male" | "Female" | "Other"
       user_roles: "user" | "admin" | "super_admin"
     }
     CompositeTypes: {
@@ -462,6 +480,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      sex: ["Male", "Female", "Other"],
       user_roles: ["user", "admin", "super_admin"],
     },
   },

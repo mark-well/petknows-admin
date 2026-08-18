@@ -1,8 +1,8 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "../../utils/supabase";
-import type { Database } from "../../shared/types/database.types";
 import { getUserProfile } from "../../features/user-profile/services/getUserProfile";
+import type { Database } from "../../shared/types/database.types";
 
 type UserProfile = Database["public"]["Tables"]["profiles"]["Row"];
 type AuthContextType = {
@@ -14,7 +14,9 @@ type AuthContextType = {
   signOut: () => Promise<void>;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -33,12 +35,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session) getUserProfile(session.user.id).then(setUserProfile);
-      setLoading(false);
-    });
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session) getUserProfile(session.user.id).then(setUserProfile);
+        setLoading(false);
+      },
+    );
 
     return () => listener.subscription.unsubscribe();
   }, []);
@@ -54,7 +58,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (_email: string, _password: string) => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: _email, password: _password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: _email,
+        password: _password,
+      });
       if (error) throw error;
 
       const role = await getRole();
@@ -73,7 +80,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, userProfile, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ session, user, userProfile, loading, signIn, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );
