@@ -236,6 +236,7 @@ export type Database = {
           id: string
           last_name: string | null
           province_id: string | null
+          public_id: string
           role: Database["public"]["Enums"]["user_roles"]
           sex: Database["public"]["Enums"]["sex"]
         }
@@ -250,6 +251,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           province_id?: string | null
+          public_id?: string
           role?: Database["public"]["Enums"]["user_roles"]
           sex?: Database["public"]["Enums"]["sex"]
         }
@@ -264,6 +266,7 @@ export type Database = {
           id?: string
           last_name?: string | null
           province_id?: string | null
+          public_id?: string
           role?: Database["public"]["Enums"]["user_roles"]
           sex?: Database["public"]["Enums"]["sex"]
         }

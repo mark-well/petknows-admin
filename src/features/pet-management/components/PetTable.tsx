@@ -30,8 +30,8 @@ function PetTable({ usePetList }: Props) {
     <>
       <table className="w-full">
         <thead>
-          <tr className="rounded-sm bg-gray-200">
-            <th className="flex gap-x-2 px-4 py-2 text-left">
+          <tr className="w-full rounded-sm bg-gray-200">
+            <th className="flex gap-2 px-4 py-2 text-left">
               <Checkbox
                 checked={allSelected}
                 partial={selectedPetIds.size > 0}
@@ -60,11 +60,8 @@ function PetTable({ usePetList }: Props) {
                 key={pet.public_id}
                 className="cursor-pointer border-b border-gray-300 px-4 transition-colors duration-75 hover:bg-gray-100"
               >
-                <td className="flex gap-x-2 px-4 py-2">
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="shrink-0"
-                  >
+                <td className="flex gap-2 px-4 py-1">
+                  <div onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       checked={selectedPetIds.has(pet.id)}
                       onChange={(checked) =>
