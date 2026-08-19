@@ -37,7 +37,7 @@ function ProfileDropdown({ onClose }: Props) {
   const handleSignout = async () => {
     try {
       await signOut();
-      navigate("/");
+      navigate("/login");
     } catch (e) {
       console.error(e);
     }

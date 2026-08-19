@@ -6,7 +6,7 @@ import type { Database } from "../../../shared/types/database.types";
 import { useQuery } from "@tanstack/react-query";
 import getUserAddress from "../../user-profile/services/getUserAddress";
 import getAge from "../../user-profile/services/getAge";
-import formatJoinedDate from "../../user-profile/services/formatJoinedDate";
+import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   userProfile: Database["public"]["Tables"]["profiles"]["Row"];
