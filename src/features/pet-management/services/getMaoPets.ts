@@ -7,6 +7,7 @@ export default async function getMaoPets(maoId: string | null) {
     .from("pets")
     .select(
       `
+      id,
       public_id,
       pet_name:name,
       pet_type,
@@ -25,6 +26,7 @@ export default async function getMaoPets(maoId: string | null) {
 
   if (error) throw error;
   const result = data.map((pet) => ({
+    id: pet.id,
     public_id: pet.public_id,
     pet_name: pet.pet_name,
     pet_type: pet.pet_type,

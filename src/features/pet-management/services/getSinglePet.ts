@@ -7,10 +7,12 @@ export default async function getSinglePet(petId: string | null) {
     .from("pets")
     .select(
       `
+        id,
         public_id,
         name,
         pet_type,
         created_at,
+        avatar_url,
         status:pet_status(name),
         user_id
       `,

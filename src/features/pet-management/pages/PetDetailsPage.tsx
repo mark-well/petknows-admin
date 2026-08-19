@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import getSinglePet from "../services/getSinglePet";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
+import { getPetImage } from "../services";
 
 function PetDetailsPage() {
   const params = useParams();
@@ -11,6 +12,12 @@ function PetDetailsPage() {
     queryKey: ["singlePet", petId],
     queryFn: () => getSinglePet(petId ?? null),
     enabled: !!petId,
+  });
+
+  const { data: petImageUrl } = useQuery({
+    queryKey: ["petImage", petId],
+    queryFn: () => getPetImage(pet?.avatar_url ?? null),
+    enabled: !!pet,
   });
 
   if (isPending || !pet) return <div>Loading...</div>;
@@ -23,6 +30,12 @@ function PetDetailsPage() {
         <p>Status: {pet?.status?.name}</p>
         <p>Date Registered: {formatJoinedDate(new Date(pet.created_at))}</p>
         <p>Owner: {pet?.user_id}</p>
+        <img
+          src={petImageUrl?.publicUrl}
+          alt="Pet Image"
+          width="350"
+          height="350"
+        />
       </div>
     </>
   );

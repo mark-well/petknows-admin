@@ -19,3 +19,9 @@ export async function getTotalPetCountFromMao(id: string | null) {
   if (error) throw error;
   return count;
 }
+
+export function getPetImage(url: string | null) {
+  if (!url) throw new Error("No url");
+  const { data } = supabase.storage.from("pet_avatars").getPublicUrl(url);
+  return data;
+}

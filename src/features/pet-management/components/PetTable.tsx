@@ -1,39 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "../../../auth/providers/useAuth";
-import getMaoPets from "../services/getMaoPets";
 import Checkbox from "../../../shared/components/Checkbox";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
-import { useState } from "react";
 import { useNavigate } from "react-router";
+import usePetList from "../hooks/petList";
 
-function PetTable() {
-  const { userProfile } = useAuth();
+interface Props {
+  usePetList: ReturnType<typeof usePetList>;
+}
+
+function PetTable({ usePetList }: Props) {
   const navigate = useNavigate();
-
-  // Fetch all MAO specific pets
-  const { data: allMaoPets, isPending: petsLoading } = useQuery({
-    queryKey: ["maoPets", userProfile?.id],
-    queryFn: () => getMaoPets(userProfile?.admin_at ?? null),
-  });
-
-  const [selectedPetIds, setSelectedPetIds] = useState<Set<string>>(new Set());
-  const allSelected =
-    !!allMaoPets?.length &&
-    allMaoPets.every((pet) => selectedPetIds.has(pet.public_id));
-
-  const handlePetCheckd = (petId: string, checked: boolean) => {
-    setSelectedPetIds((prev) => {
-      const next = new Set(prev);
-      checked ? next.add(petId) : next.delete(petId);
-      return next;
-    });
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    setSelectedPetIds(
-      checked ? new Set(allMaoPets?.map((pet) => pet.public_id)) : new Set(),
-    );
-  };
+  const {
+    allMaoPets,
+    petsLoading,
+    allSelected,
+    selectedPetIds,
+    togglePetSelection,
+    toggleSelectAll,
+  } = usePetList;
 
   const tableHeaders = [
     "Name",
@@ -52,7 +35,7 @@ function PetTable() {
               <Checkbox
                 checked={allSelected}
                 partial={selectedPetIds.size > 0}
-                onChange={handleSelectAll}
+                onChange={toggleSelectAll}
               />
               ID
             </th>
@@ -83,9 +66,9 @@ function PetTable() {
                     className="shrink-0"
                   >
                     <Checkbox
-                      checked={selectedPetIds.has(pet.public_id)}
+                      checked={selectedPetIds.has(pet.id)}
                       onChange={(checked) =>
-                        handlePetCheckd(pet.public_id, checked)
+                        togglePetSelection(pet.id, checked)
                       }
                     />
                   </div>{" "}
