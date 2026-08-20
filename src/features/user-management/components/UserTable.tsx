@@ -1,9 +1,11 @@
-import { useAuth } from "../../../auth/providers/useAuth";
 import Checkbox from "../../../shared/components/Checkbox";
 import useUsersList from "../hooks/userUsersList";
 
-function UserTable() {
-  const { userProfile } = useAuth();
+interface Props {
+  useUserList: ReturnType<typeof useUsersList>;
+}
+
+function UserTable({ useUserList }: Props) {
   const {
     allUsers,
     usersLoading,
@@ -11,7 +13,7 @@ function UserTable() {
     allSelected,
     toggleUserSelection,
     toggleSelectAll,
-  } = useUsersList();
+  } = useUserList;
 
   return (
     <>
@@ -40,21 +42,17 @@ function UserTable() {
             allUsers?.map((user) => (
               <tr
                 key={user.id}
-                className={`cursor-pointer border-b border-gray-300 transition-colors duration-75 ${userProfile?.id === user.id ? "bg-[hsl(19_100%_92%)]" : "hover:bg-gray-100"}`}
+                className={`cursor-pointer border-b border-gray-300 transition-colors duration-75 hover:bg-gray-100`}
               >
                 <td className={`flex gap-2 px-4 py-1`}>
-                  {userProfile?.id === user.id ? (
-                    ""
-                  ) : (
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedUserIds.has(user.id)}
-                        onChange={(checked) =>
-                          toggleUserSelection(user.id, checked)
-                        }
-                      />
-                    </div>
-                  )}
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={selectedUserIds.has(user.id)}
+                      onChange={(checked) =>
+                        toggleUserSelection(user.id, checked)
+                      }
+                    />
+                  </div>
                   {user.public_id}
                 </td>
                 <td>{user.first_name}</td>

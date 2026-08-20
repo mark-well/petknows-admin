@@ -14,6 +14,8 @@ export default async function getUsers() {
       created_at
     `,
     )
+    .neq("role", "admin")
+    .neq("role", "super_admin")
     .order("created_at", { ascending: false });
 
   if (error) throw error;

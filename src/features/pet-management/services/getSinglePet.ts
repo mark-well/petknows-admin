@@ -14,7 +14,7 @@ export default async function getSinglePet(petId: string | null) {
         created_at,
         avatar_url,
         status:pet_status(name),
-        user_id
+        profiles(public_id, first_name, last_name, email, user_contact(number))
       `,
     )
     .eq("public_id", petId)

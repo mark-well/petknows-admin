@@ -2,6 +2,7 @@ import Checkbox from "../../../shared/components/Checkbox";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 import { useNavigate } from "react-router";
 import usePetList from "../hooks/petList";
+import StatusBadge from "./StatusBadge";
 
 interface Props {
   usePetList: ReturnType<typeof usePetList>;
@@ -60,7 +61,7 @@ function PetTable({ usePetList }: Props) {
                 key={pet.public_id}
                 className="cursor-pointer border-b border-gray-300 px-4 transition-colors duration-75 hover:bg-gray-100"
               >
-                <td className="flex gap-2 px-4 py-1">
+                <td className="flex gap-2 px-4 py-2">
                   <div onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       checked={selectedPetIds.has(pet.id)}
@@ -73,7 +74,13 @@ function PetTable({ usePetList }: Props) {
                 </td>
                 <td>{pet.pet_name}</td>
                 <td className="capitalize">{pet.pet_type}</td>
-                <td>{pet.pet_status}</td>
+                <td>
+                  <div className="flex">
+                    <StatusBadge status={pet.pet_status}>
+                      {pet.pet_status}
+                    </StatusBadge>
+                  </div>
+                </td>
                 <td>{formatJoinedDate(new Date(pet.date_of_registration))}</td>
                 <td>{`${pet.owner_firstname} ${pet.owner_lastname}`}</td>
               </tr>

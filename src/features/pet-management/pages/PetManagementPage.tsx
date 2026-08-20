@@ -43,9 +43,17 @@ function PetManagementPage() {
       <div className="font-inter text-text flex w-full flex-col gap-y-4 p-4">
         <h2 className="font-sora text-2xl font-semibold">Manage Pets</h2>
         <div className="top-toolbar flex justify-between">
-          <IconButton icon={faTrash} variant="danger" onClick={handleDeletePet}>
-            Delete
-          </IconButton>
+          <div className="flex items-center gap-x-2">
+            <IconButton
+              icon={faTrash}
+              variant="danger"
+              onClick={handleDeletePet}
+              className="h-full"
+            >
+              Delete
+            </IconButton>
+            <p className="text-xl font-semibold">{`${petList.selectedPetIds.size}/${petList.allMaoPets?.length}`}</p>
+          </div>
           <div className="flex gap-x-4">
             <input
               type="text"
