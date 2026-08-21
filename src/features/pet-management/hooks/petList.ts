@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../../../auth/providers/useAuth";
 import getMaoPets from "../services/getMaoPets";
 import { useState } from "react";
+import type { Pet } from "../types";
 
 export default function usePetList() {
   const { userProfile } = useAuth();
@@ -16,27 +17,29 @@ export default function usePetList() {
     queryFn: () => getMaoPets(userProfile?.admin_at ?? null),
   });
 
-  const [selectedPetIds, setSelectedPetIds] = useState<Set<string>>(new Set());
+  const [selectedPets, setSelectedPets] = useState<Set<Pet>>(new Set());
   const allSelected =
-    !!allMaoPets?.length &&
-    allMaoPets.every((pet) => selectedPetIds.has(pet.id));
+    !!allMaoPets?.length && allMaoPets.every((pet) => selectedPets.has(pet));
 
-  const togglePetSelection = (petId: string, checked: boolean) => {
-    setSelectedPetIds((prev) => {
+  const togglePetSelection = (
+    pet: NonNullable<typeof allMaoPets>[number],
+    checked: boolean,
+  ) => {
+    setSelectedPets((prev) => {
       const next = new Set(prev);
-      checked ? next.add(petId) : next.delete(petId);
+      checked ? next.add(pet) : next.delete(pet);
       return next;
     });
   };
 
   const toggleSelectAll = (checked: boolean) => {
-    setSelectedPetIds(
-      checked ? new Set(allMaoPets?.map((pet) => pet.id)) : new Set(),
+    setSelectedPets(
+      checked ? new Set(allMaoPets?.map((pet) => pet)) : new Set(),
     );
   };
 
   const clearSelectedPetIds = () => {
-    setSelectedPetIds(new Set());
+    setSelectedPets(new Set());
   };
 
   const refreshPets = () => {
@@ -47,7 +50,7 @@ export default function usePetList() {
     allMaoPets,
     petsLoading,
     allSelected,
-    selectedPetIds,
+    selectedPets,
     togglePetSelection,
     toggleSelectAll,
     clearSelectedPetIds,

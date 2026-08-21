@@ -5,13 +5,14 @@ import PetTable from "../components/PetTable";
 import usePetList from "../hooks/petList";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import deletePets from "../services/deletePets";
+import type { Pet } from "../types";
 
 function PetManagementPage() {
   const petList = usePetList();
   const queryClient = useQueryClient();
 
   const deletePetMutation = useMutation({
-    mutationFn: (selectedPetIds: Set<string>) => deletePets(selectedPetIds),
+    mutationFn: (selectedPet: Set<Pet>) => deletePets(selectedPet),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["maoPets"] });
       alert("Delete success");
@@ -24,7 +25,7 @@ function PetManagementPage() {
   });
 
   const handleDeletePet = () => {
-    if (petList.selectedPetIds.size === 0) {
+    if (petList.selectedPets.size === 0) {
       alert("No pets selected");
       return;
     }
@@ -32,7 +33,7 @@ function PetManagementPage() {
     const confirmed = confirm("Are you sure you want to delete the pets?");
     if (!confirmed) return;
 
-    deletePetMutation.mutate(petList.selectedPetIds);
+    deletePetMutation.mutate(petList.selectedPets);
   };
 
   return (
@@ -52,7 +53,7 @@ function PetManagementPage() {
             >
               Delete
             </IconButton>
-            <p className="text-xl font-semibold">{`${petList.selectedPetIds.size}/${petList.allMaoPets?.length}`}</p>
+            <p className="text-xl font-semibold">{`${petList.selectedPets.size}/${petList.allMaoPets?.length}`}</p>
           </div>
           <div className="flex gap-x-4">
             <input

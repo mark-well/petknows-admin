@@ -14,7 +14,7 @@ function PetTable({ usePetList }: Props) {
     allMaoPets,
     petsLoading,
     allSelected,
-    selectedPetIds,
+    selectedPets,
     togglePetSelection,
     toggleSelectAll,
   } = usePetList;
@@ -35,7 +35,7 @@ function PetTable({ usePetList }: Props) {
             <th className="flex gap-2 px-4 py-2 text-left">
               <Checkbox
                 checked={allSelected}
-                partial={selectedPetIds.size > 0}
+                partial={selectedPets.size > 0}
                 onChange={toggleSelectAll}
               />
               ID
@@ -64,10 +64,8 @@ function PetTable({ usePetList }: Props) {
                 <td className="flex gap-2 px-4 py-2">
                   <div onClick={(e) => e.stopPropagation()}>
                     <Checkbox
-                      checked={selectedPetIds.has(pet.id)}
-                      onChange={(checked) =>
-                        togglePetSelection(pet.id, checked)
-                      }
+                      checked={selectedPets.has(pet)}
+                      onChange={(checked) => togglePetSelection(pet, checked)}
                     />
                   </div>{" "}
                   {pet.public_id}
