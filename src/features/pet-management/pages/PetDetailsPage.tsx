@@ -28,6 +28,17 @@ function PetDetailsPage() {
     enabled: !!pet,
   });
 
+  const copyText = async (text: string | null) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+
+      alert("Tex copied to clipboard.");
+    } catch (e) {
+      alert("Failed to copy text.");
+    }
+  };
+
   if (isPending || !pet) return <div>Loading...</div>;
   return (
     <>
@@ -65,7 +76,7 @@ function PetDetailsPage() {
                           <FontAwesomeIcon
                             icon={faCopy}
                             size="lg"
-                            onClick={() => alert("Not yet implemented")}
+                            onClick={() => copyText(pet.public_id)}
                           />
                         </div>
                       </td>
@@ -117,7 +128,7 @@ function PetDetailsPage() {
               </div>
               <IconButton
                 icon={faPen}
-                onClick={() => alert("This feature is not yet implemented.")}
+                onClick={() => alert("Not yet implemented.")}
               >
                 Update
               </IconButton>
@@ -148,7 +159,9 @@ function PetDetailsPage() {
                         <FontAwesomeIcon
                           icon={faCopy}
                           size="lg"
-                          onClick={() => alert("Not yet implemented")}
+                          onClick={() =>
+                            copyText(pet.profiles?.public_id ?? null)
+                          }
                         />
                       </div>
                     </td>
