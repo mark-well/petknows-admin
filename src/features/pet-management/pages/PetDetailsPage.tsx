@@ -11,16 +11,26 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StatusBadge from "../components/StatusBadge";
+import { useForm } from "react-hook-form";
+import type { SinglePet } from "../types";
+import { useEffect } from "react";
 
 function PetDetailsPage() {
   const params = useParams();
   const petId = params.petId;
+  const { register, handleSubmit, reset } = useForm<SinglePet>();
 
   const { data: pet, isPending } = useQuery({
     queryKey: ["singlePet", petId],
     queryFn: () => getSinglePet(petId ?? null),
     enabled: !!petId,
   });
+
+  useEffect(() => {
+    if (pet) {
+      reset(pet);
+    }
+  }, [pet]);
 
   const { data: petImageUrl } = useQuery({
     queryKey: ["petImage", petId],
@@ -39,6 +49,10 @@ function PetDetailsPage() {
     }
   };
 
+  const onSubmitUpdate = (data: SinglePet) => {
+    console.log(data.name);
+  };
+
   if (isPending || !pet) return <div>Loading...</div>;
   return (
     <>
@@ -53,78 +67,86 @@ function PetDetailsPage() {
           />
 
           <div className="flex flex-1 flex-col gap-8">
+            {/* Pet Details */}
             <div className="flex flex-col items-end gap-4">
               <div className="w-full overflow-hidden rounded-md border border-gray-300">
-                <table className="w-full">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th
-                        colSpan={2}
-                        className="font-sora rounded-md border-b border-gray-300 px-4 py-2 text-left font-semibold text-gray-700"
-                      >
-                        Pet Details
-                      </th>
-                    </tr>
-                  </thead>
+                <form onSubmit={handleSubmit(onSubmitUpdate)}>
+                  <table className="w-full">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th
+                          colSpan={2}
+                          className="font-sora rounded-md border-b border-gray-300 px-4 py-2 text-left font-semibold text-gray-700"
+                        >
+                          Pet Details
+                        </th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">ID:</td>
-                      <td className="px-4 text-gray-700">
-                        <div className="flex">
-                          <p className="grow">{pet.public_id}</p>
-                          <FontAwesomeIcon
-                            icon={faCopy}
-                            size="lg"
-                            onClick={() => copyText(pet.public_id)}
+                    <tbody>
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">ID:</td>
+                        <td className="px-4 text-gray-700">
+                          <div className="flex">
+                            <p className="grow">{pet.public_id}</p>
+                            <FontAwesomeIcon
+                              icon={faCopy}
+                              size="lg"
+                              onClick={() => copyText(pet.public_id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Name:</td>
+                        <td className="px-4 text-gray-700">
+                          <input {...register("name")} className="w-full" />
+                        </td>
+                      </tr>
+
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Species:</td>
+                        <td className="px-4 text-gray-700">
+                          <input
+                            {...register("pet_type")}
+                            className="w-full capitalize"
                           />
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">Name:</td>
-                      <td className="px-4 text-gray-700">{pet.name}</td>
-                    </tr>
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Status:</td>
+                        <td className="px-4 text-gray-700 capitalize">
+                          <div className="flex">
+                            <StatusBadge status={pet.status?.name}>
+                              {pet.status?.name}
+                            </StatusBadge>
+                          </div>
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">Species:</td>
-                      <td className="px-4 text-gray-700 capitalize">
-                        {pet.pet_type}
-                      </td>
-                    </tr>
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Breed:</td>
+                        <td className="px-4 text-gray-700 capitalize">N/A</td>
+                      </tr>
 
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">Status:</td>
-                      <td className="px-4 text-gray-700 capitalize">
-                        <div className="flex">
-                          <StatusBadge status={pet.status?.name}>
-                            {pet.status?.name}
-                          </StatusBadge>
-                        </div>
-                      </td>
-                    </tr>
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Color:</td>
+                        <td className="px-4 text-gray-700 capitalize">N/A</td>
+                      </tr>
 
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">Breed:</td>
-                      <td className="px-4 text-gray-700 capitalize">N/A</td>
-                    </tr>
-
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">Color:</td>
-                      <td className="px-4 text-gray-700 capitalize">N/A</td>
-                    </tr>
-
-                    <tr className="border-b border-gray-300">
-                      <td className="px-4 py-2 text-gray-500">
-                        Date Registered:
-                      </td>
-                      <td className="px-4 text-gray-700 capitalize">
-                        {formatJoinedDate(new Date(pet.created_at))}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">
+                          Date Registered:
+                        </td>
+                        <td className="px-4 text-gray-700 capitalize">
+                          {formatJoinedDate(new Date(pet.created_at))}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </form>
               </div>
               <IconButton
                 icon={faPen}
@@ -134,6 +156,7 @@ function PetDetailsPage() {
               </IconButton>
             </div>
 
+            {/* User Details */}
             <div className="w-full overflow-hidden rounded-md border border-gray-300">
               <table className="w-full">
                 <thead className="bg-gray-100">
