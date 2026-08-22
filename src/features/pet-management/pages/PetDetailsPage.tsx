@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 import getSinglePet from "../services/getSinglePet";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
@@ -12,13 +12,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StatusBadge from "../components/StatusBadge";
 import { useForm } from "react-hook-form";
-import type { SinglePet } from "../types";
 import { useEffect } from "react";
+import type { Pet, PetUpdateType } from "../types";
+import updatePet from "../services/updatePet";
+import { queryClient } from "../../../app/queryClient";
 
 function PetDetailsPage() {
   const params = useParams();
   const petId = params.petId;
-  const { register, handleSubmit, reset } = useForm<SinglePet>();
+  const { register, handleSubmit, reset } = useForm<Pet>();
 
   const { data: pet, isPending } = useQuery({
     queryKey: ["singlePet", petId],
@@ -49,8 +51,38 @@ function PetDetailsPage() {
     }
   };
 
-  const onSubmitUpdate = (data: SinglePet) => {
-    console.log(data.name);
+  const updatePetMutation = useMutation({
+    mutationFn: ({
+      petId,
+      updated,
+    }: {
+      petId: string;
+      updated: PetUpdateType;
+    }) => updatePet(petId, updated),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["singlePet"] });
+      alert("Pet successfully updated");
+    },
+    onError: () => alert("Update failed"),
+  });
+
+  const onSubmitUpdate = (data: Pet) => {
+    if (!pet?.id) throw new Error("No id");
+    const updatedData: PetUpdateType = {
+      name: data.name,
+      pet_type: data.pet_type,
+      breed: data.breed,
+      color: data.color,
+    };
+    updatePetMutation.mutate({ petId: pet?.id, updated: updatedData });
+  };
+
+  const resetValueToDefault = (
+    e: React.FocusEvent<HTMLInputElement, Element>,
+  ) => {
+    if (e.target.value.trim() === "") {
+      reset();
+    }
   };
 
   if (isPending || !pet) return <div>Loading...</div>;
@@ -70,7 +102,7 @@ function PetDetailsPage() {
             {/* Pet Details */}
             <div className="flex flex-col items-end gap-4">
               <div className="w-full overflow-hidden rounded-md border border-gray-300">
-                <form onSubmit={handleSubmit(onSubmitUpdate)}>
+                <form>
                   <table className="w-full">
                     <thead className="bg-gray-100">
                       <tr>
@@ -101,7 +133,11 @@ function PetDetailsPage() {
                       <tr className="border-b border-gray-300">
                         <td className="px-4 py-2 text-gray-500">Name:</td>
                         <td className="px-4 text-gray-700">
-                          <input {...register("name")} className="w-full" />
+                          <input
+                            {...register("name", { required: true })}
+                            className="w-full"
+                            onBlur={(e) => resetValueToDefault(e)}
+                          />
                         </td>
                       </tr>
 
@@ -109,8 +145,9 @@ function PetDetailsPage() {
                         <td className="px-4 py-2 text-gray-500">Species:</td>
                         <td className="px-4 text-gray-700">
                           <input
-                            {...register("pet_type")}
+                            {...register("pet_type", { required: true })}
                             className="w-full capitalize"
+                            onBlur={(e) => resetValueToDefault(e)}
                           />
                         </td>
                       </tr>
@@ -128,12 +165,24 @@ function PetDetailsPage() {
 
                       <tr className="border-b border-gray-300">
                         <td className="px-4 py-2 text-gray-500">Breed:</td>
-                        <td className="px-4 text-gray-700 capitalize">N/A</td>
+                        <td className="px-4 text-gray-700 capitalize">
+                          <input
+                            {...register("breed", { required: true })}
+                            className="w-full"
+                            onBlur={(e) => resetValueToDefault(e)}
+                          />
+                        </td>
                       </tr>
 
                       <tr className="border-b border-gray-300">
                         <td className="px-4 py-2 text-gray-500">Color:</td>
-                        <td className="px-4 text-gray-700 capitalize">N/A</td>
+                        <td className="px-4 text-gray-700 capitalize">
+                          <input
+                            {...register("color", { required: true })}
+                            className="w-full"
+                            onBlur={(e) => resetValueToDefault(e)}
+                          />
+                        </td>
                       </tr>
 
                       <tr className="border-b border-gray-300">
@@ -148,10 +197,7 @@ function PetDetailsPage() {
                   </table>
                 </form>
               </div>
-              <IconButton
-                icon={faPen}
-                onClick={() => alert("Not yet implemented.")}
-              >
+              <IconButton icon={faPen} onClick={handleSubmit(onSubmitUpdate)}>
                 Update
               </IconButton>
             </div>

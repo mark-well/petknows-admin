@@ -70,17 +70,17 @@ function PetTable({ usePetList }: Props) {
                   </div>{" "}
                   {pet.public_id}
                 </td>
-                <td>{pet.pet_name}</td>
+                <td>{pet.name}</td>
                 <td className="capitalize">{pet.pet_type}</td>
                 <td>
                   <div className="flex">
-                    <StatusBadge status={pet.pet_status}>
-                      {pet.pet_status}
+                    <StatusBadge status={pet.status?.name}>
+                      {pet.status?.name}
                     </StatusBadge>
                   </div>
                 </td>
-                <td>{formatJoinedDate(new Date(pet.date_of_registration))}</td>
-                <td>{`${pet.owner_firstname} ${pet.owner_lastname}`}</td>
+                <td>{formatJoinedDate(new Date(pet.created_at))}</td>
+                <td>{`${pet.profiles?.first_name} ${pet.profiles?.last_name}`}</td>
               </tr>
             ))
           )}

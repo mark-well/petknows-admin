@@ -163,6 +163,8 @@ export type Database = {
       pets: {
         Row: {
           avatar_url: string | null
+          breed: string | null
+          color: string | null
           created_at: string
           date_registered: string | null
           embedding: string | null
@@ -176,6 +178,8 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          breed?: string | null
+          color?: string | null
           created_at?: string
           date_registered?: string | null
           embedding?: string | null
@@ -189,6 +193,8 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          breed?: string | null
+          color?: string | null
           created_at?: string
           date_registered?: string | null
           embedding?: string | null
