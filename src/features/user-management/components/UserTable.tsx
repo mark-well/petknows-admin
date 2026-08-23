@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import Checkbox from "../../../shared/components/Checkbox";
 import useUsersList from "../hooks/userUsersList";
 
@@ -14,6 +15,7 @@ function UserTable({ useUserList }: Props) {
     toggleUserSelection,
     toggleSelectAll,
   } = useUserList;
+  const navigate = useNavigate();
 
   return (
     <>
@@ -41,6 +43,9 @@ function UserTable({ useUserList }: Props) {
           ) : (
             allUsers?.map((user) => (
               <tr
+                onClick={() => {
+                  navigate(`/user-management/${user.public_id}`);
+                }}
                 key={user.id}
                 className={`cursor-pointer border-b border-gray-300 transition-colors duration-75 hover:bg-gray-100`}
               >

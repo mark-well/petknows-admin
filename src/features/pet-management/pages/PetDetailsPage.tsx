@@ -1,5 +1,6 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import getSinglePet from "../services/getSinglePet";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 import { getPetImage } from "../services";
@@ -16,11 +17,13 @@ import { useEffect } from "react";
 import type { Pet, PetUpdateType } from "../types";
 import updatePet from "../services/updatePet";
 import { queryClient } from "../../../app/queryClient";
+import copyText from "../../../utils/copyText";
 
 function PetDetailsPage() {
   const params = useParams();
   const petId = params.petId;
   const { register, handleSubmit, reset } = useForm<Pet>();
+  const navigate = useNavigate();
 
   const { data: pet, isPending } = useQuery({
     queryKey: ["singlePet", petId],
@@ -39,17 +42,6 @@ function PetDetailsPage() {
     queryFn: () => getPetImage(pet?.avatar_url ?? null),
     enabled: !!pet,
   });
-
-  const copyText = async (text: string | null) => {
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-
-      alert("Tex copied to clipboard.");
-    } catch (e) {
-      alert("Failed to copy text.");
-    }
-  };
 
   const updatePetMutation = useMutation({
     mutationFn: ({
@@ -83,6 +75,10 @@ function PetDetailsPage() {
     if (e.target.value.trim() === "") {
       reset();
     }
+  };
+
+  const navigateToUser = (userId: string) => {
+    navigate(`/user-management/${userId}`);
   };
 
   if (isPending || !pet) return <div>Loading...</div>;
@@ -148,6 +144,7 @@ function PetDetailsPage() {
                             {...register("pet_type", { required: true })}
                             className="w-full capitalize"
                             onBlur={(e) => resetValueToDefault(e)}
+                            placeholder="dog, cat, etc."
                           />
                         </td>
                       </tr>
@@ -211,9 +208,16 @@ function PetDetailsPage() {
                       colSpan={2}
                       className="font-sora rounded-md border-b border-gray-300 px-4 py-2 text-left font-semibold text-gray-700"
                     >
-                      <div className="flex justify-between">
+                      <div className="flex items-center justify-between">
                         User Details
-                        <FontAwesomeIcon icon={faChevronRight} size="lg" />
+                        <FontAwesomeIcon
+                          icon={faChevronRight}
+                          size="lg"
+                          className="rounded-sm p-1 transition-colors duration-75 hover:bg-gray-300"
+                          onClick={() =>
+                            navigateToUser(pet.profiles?.public_id ?? "")
+                          }
+                        />
                       </div>
                     </th>
                   </tr>
