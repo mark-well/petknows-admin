@@ -11,7 +11,7 @@ interface Props {
 function PetTable({ usePetList }: Props) {
   const navigate = useNavigate();
   const {
-    allMaoPets,
+    allPets,
     petsLoading,
     allSelected,
     selectedPets,
@@ -53,7 +53,7 @@ function PetTable({ usePetList }: Props) {
               <td>Loading...</td>
             </tr>
           ) : (
-            allMaoPets?.map((pet) => (
+            allPets?.map((pet) => (
               <tr
                 onClick={() => {
                   navigate(`/pet-management/${pet.public_id}`);

@@ -3,26 +3,34 @@ import { useAuth } from "../../../auth/providers/useAuth";
 import getMaoPets from "../services/getMaoPets";
 import { useState } from "react";
 import type { Pet } from "../types";
+import getAllPets from "../services/getAllPets";
 
 export default function usePetList() {
-  const { userProfile } = useAuth();
+  const { userProfile, userRole } = useAuth();
 
   // Fetch all MAO specific pets
   const {
-    data: allMaoPets,
+    data: allPets,
     isPending: petsLoading,
     refetch,
   } = useQuery({
     queryKey: ["maoPets", userProfile?.id],
-    queryFn: () => getMaoPets(userProfile?.admin_at ?? null),
+    queryFn: () => {
+      if (userRole === "super_admin") {
+        return getAllPets();
+      }
+      {
+        return getMaoPets(userProfile?.admin_at ?? null);
+      }
+    },
   });
 
   const [selectedPets, setSelectedPets] = useState<Set<Pet>>(new Set());
   const allSelected =
-    !!allMaoPets?.length && allMaoPets.every((pet) => selectedPets.has(pet));
+    !!allPets?.length && allPets.every((pet) => selectedPets.has(pet));
 
   const togglePetSelection = (
-    pet: NonNullable<typeof allMaoPets>[number],
+    pet: NonNullable<typeof allPets>[number],
     checked: boolean,
   ) => {
     setSelectedPets((prev) => {
@@ -33,9 +41,7 @@ export default function usePetList() {
   };
 
   const toggleSelectAll = (checked: boolean) => {
-    setSelectedPets(
-      checked ? new Set(allMaoPets?.map((pet) => pet)) : new Set(),
-    );
+    setSelectedPets(checked ? new Set(allPets?.map((pet) => pet)) : new Set());
   };
 
   const clearSelectedPetIds = () => {
@@ -47,7 +53,7 @@ export default function usePetList() {
   };
 
   return {
-    allMaoPets,
+    allPets,
     petsLoading,
     allSelected,
     selectedPets,

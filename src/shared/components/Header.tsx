@@ -6,13 +6,13 @@ import { useAuth } from "../../auth/providers/useAuth";
 import { getMaoName } from "../../features/mao/services";
 
 function Header() {
-  const { userProfile } = useAuth();
+  const { userProfile, userRole } = useAuth();
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
     useState<boolean>(false);
-  const { data: maoName, isPending: isMaoNamePending } = useQuery({
+  const { data: maoName, isFetching: isMaoNamePending } = useQuery({
     queryKey: ["maoName", userProfile?.id],
     queryFn: () => getMaoName(userProfile?.admin_at ?? null),
-    enabled: !!userProfile?.id,
+    enabled: Boolean(userProfile?.admin_at) && userRole === "admin",
   });
 
   const toggleProfileDropdown = () => {
@@ -33,10 +33,15 @@ function Header() {
               <p className="font-sora text-secondary text-xl">PetKnows</p>
               <p className="text-sm text-gray-600">Admin</p>
             </div>
-            <h1 className="font-sora text-text text-base">
-              {isMaoNamePending ? "Loading..." : maoName?.name} &#45; Municipal
-              Agriculture Office
-            </h1>
+            <div className="font-sora text-text text-base">
+              {isMaoNamePending ? (
+                <h1>Loading...</h1>
+              ) : maoName ? (
+                <h1>{maoName.name} &#45; Municipal Agriculture Office</h1>
+              ) : (
+                <h1 className="font-medium text-red-600">Super Admin</h1>
+              )}
+            </div>
           </div>
         </div>
         <ProfileIcon

@@ -3,11 +3,13 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "../../utils/supabase";
 import { getUserProfile } from "../../features/user-profile/services/getUserProfile";
 import type { UserProfile } from "../../features/user-profile/types";
+import type { UserRoles } from "../types";
 
 type AuthContextType = {
   session: Session | null;
   user: User | null;
   userProfile: UserProfile | undefined;
+  userRole: UserRoles | undefined;
   loading: boolean;
   signIn: (_email: string, _password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -22,37 +24,55 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile | undefined>(
     undefined,
   );
+  const [userRole, setUserRole] = useState<UserRoles>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const init = async () => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session) getUserProfile(session.user.id, null);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        await loadUser(session);
+      } finally {
         setLoading(false);
-      });
+      }
     };
 
     init();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session) getUserProfile(session.user.id, null).then(setUserProfile);
-        setLoading(false);
+      async (_event, session) => {
+        try {
+          await loadUser(session);
+        } finally {
+          setLoading(false);
+        }
       },
     );
 
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  const loadUser = async (session: Session | null) => {
+    setSession(session);
+    setUser(session?.user ?? null);
+
+    if (!session) return;
+    const [profile, role] = await Promise.all([
+      getUserProfile(session?.user.id, null),
+      getRole(),
+    ]);
+
+    setUserProfile(profile);
+    setUserRole(role);
+  };
+
   const getRole = async () => {
     const { data, error } = await supabase.auth.getClaims();
     if (error) throw error;
 
-    const role = data?.claims.user_role;
+    const role = data?.claims.user_role as UserRoles;
     return role;
   };
 
@@ -66,7 +86,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       const role = await getRole();
-      if (role !== "admin") {
+      if (role === "user") {
         await supabase.auth.signOut();
         throw new Error("Access denied: You must be an admin to login.");
       }
@@ -82,7 +102,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ session, user, userProfile, loading, signIn, signOut }}
+      value={{ session, user, userProfile, userRole, loading, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>

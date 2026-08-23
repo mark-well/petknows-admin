@@ -1,11 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import getUsers from "../../user-profile/services/getUsers";
+import { getUsers, getUsersAdmins } from "../../user-profile/services/getUsers";
 import { useState } from "react";
+import { useAuth } from "../../../auth/providers/useAuth";
 
 export default function useUsersList() {
+  const { userRole } = useAuth();
+
   const { data: allUsers, isPending: usersLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: getUsers,
+    queryKey: ["users", userRole],
+    queryFn: () => {
+      if (userRole === "super_admin") {
+        return getUsersAdmins();
+      } else {
+        return getUsers();
+      }
+    },
   });
 
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(
@@ -13,7 +22,9 @@ export default function useUsersList() {
   );
   const allSelected =
     !!allUsers?.length &&
-    allUsers.every((user) => selectedUserIds.has(user.id));
+    allUsers
+      .filter((user) => user.role !== "super_admin")
+      .every((user) => selectedUserIds.has(user.id));
 
   const toggleUserSelection = (userId: string, checked: boolean) => {
     setSelectedUserIds((prev) => {
@@ -25,8 +36,18 @@ export default function useUsersList() {
 
   const toggleSelectAll = (checked: boolean) => {
     setSelectedUserIds(
-      checked ? new Set(allUsers?.map((user) => user.id)) : new Set(),
+      checked
+        ? new Set(
+            allUsers
+              ?.filter((user) => user.role !== "super_admin")
+              .map((user) => user.id),
+          )
+        : new Set(),
     );
+  };
+
+  const clearSelectedUsers = () => {
+    setSelectedUserIds(new Set());
   };
 
   return {
@@ -34,6 +55,7 @@ export default function useUsersList() {
     usersLoading,
     selectedUserIds,
     allSelected,
+    clearSelectedUsers,
     toggleSelectAll,
     toggleUserSelection,
   };

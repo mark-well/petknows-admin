@@ -53,7 +53,7 @@ function PetManagementPage() {
             >
               Delete
             </IconButton>
-            <p className="text-xl font-semibold">{`${petList.selectedPets.size}/${petList.allMaoPets?.length}`}</p>
+            <p className="text-xl font-semibold">{`${petList.selectedPets.size}/${petList.allPets?.length}`}</p>
           </div>
           <div className="flex gap-x-4">
             <input

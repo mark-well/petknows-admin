@@ -47,16 +47,18 @@ function UserTable({ useUserList }: Props) {
                   navigate(`/user-management/${user.public_id}`);
                 }}
                 key={user.id}
-                className={`cursor-pointer border-b border-gray-300 transition-colors duration-75 hover:bg-gray-100`}
+                className={`${user.role === "admin" ? "bg-yellow-100 hover:bg-yellow-200" : user.role === "super_admin" ? "bg-red-100 hover:bg-red-200" : ""} cursor-pointer border-b border-gray-300 transition-colors duration-75 hover:bg-gray-100`}
               >
                 <td className={`flex gap-2 px-4 py-1`}>
                   <div onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={selectedUserIds.has(user.id)}
-                      onChange={(checked) =>
-                        toggleUserSelection(user.id, checked)
-                      }
-                    />
+                    {user.role !== "super_admin" && (
+                      <Checkbox
+                        checked={selectedUserIds.has(user.id)}
+                        onChange={(checked) =>
+                          toggleUserSelection(user.id, checked)
+                        }
+                      />
+                    )}
                   </div>
                   {user.public_id}
                 </td>

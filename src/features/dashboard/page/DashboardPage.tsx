@@ -10,7 +10,7 @@ import {
 import { getTotalAdmins, getTotalUsers } from "../../user-profile/services";
 
 function DashboardPage() {
-  const { loading, userProfile } = useAuth();
+  const { loading, userProfile, userRole } = useAuth();
 
   const { data: totalPetsCount, isPending: totalPetsPending } = useQuery({
     queryKey: ["totalPets", userProfile?.id],
@@ -42,12 +42,14 @@ function DashboardPage() {
         <UserCard userProfile={userProfile} />
         <h2 className="font-sora text-2xl font-semibold">Dashboard</h2>
         <div className="flex w-full gap-4">
-          <StatCard
-            title="Total Pets"
-            value={
-              totalPetsMaoPending ? "Loading..." : (totalPetsCountMao ?? 0)
-            }
-          />
+          {userRole !== "super_admin" && (
+            <StatCard
+              title="Total Pets"
+              value={
+                totalPetsMaoPending ? "Loading..." : (totalPetsCountMao ?? 0)
+              }
+            />
+          )}
           <StatCard
             title="Total Pets (system)"
             value={totalPetsPending ? "Loading..." : (totalPetsCount ?? 0)}

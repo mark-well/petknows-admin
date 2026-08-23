@@ -7,12 +7,15 @@ import { useQuery } from "@tanstack/react-query";
 import getUserAddress from "../../user-profile/services/getUserAddress";
 import getAge from "../../user-profile/services/getAge";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
+import { useAuth } from "../../../auth/providers/useAuth";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   userProfile: Database["public"]["Tables"]["profiles"]["Row"];
 }
 
 function UserCard({ userProfile, className }: Props) {
+  const { userRole } = useAuth();
+
   const { data: userAddress, isPending: isUserAddressLoading } = useQuery({
     queryKey: ["userAddress", userProfile.id],
     queryFn: () => getUserAddress(userProfile.id),
@@ -40,7 +43,9 @@ function UserCard({ userProfile, className }: Props) {
             <h2 className="font-sora text-2xl font-semibold">
               {userProfile.first_name + " " + userProfile.last_name}
             </h2>
-            <span className="bg-secondary flex items-center justify-center rounded-sm px-4 py-1 text-white capitalize">
+            <span
+              className={`${userRole === "super_admin" ? "bg-red-600" : "bg-secondary"} flex items-center justify-center rounded-sm px-4 py-1 text-white capitalize`}
+            >
               {userProfile.role}
             </span>
           </div>
