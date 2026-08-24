@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { getUserProfile } from "../../user-profile/services/getUserProfile";
 import { getUserAvatar } from "../../user-profile/services";
 import IconButton from "../../../shared/components/IconButton";
-import { faCopy, faPen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCopy,
+  faPaw,
+  faPen,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copyText from "../../../utils/copyText";
@@ -11,11 +16,14 @@ import { useForm } from "react-hook-form";
 import type { UserProfile } from "../../user-profile/types";
 import { useEffect } from "react";
 import getUserAddress from "../../user-profile/services/getUserAddress";
+import getUserPets from "../../pet-management/services/getUserPets";
+import StatusBadge from "../../pet-management/components/StatusBadge";
 
 function UserDetailsPage() {
   const params = useParams();
   const userPublicId = params.userId;
   const { register, reset } = useForm<UserProfile>();
+  const navigate = useNavigate();
 
   const { data: user, isPending } = useQuery({
     queryKey: ["singleUser", userPublicId],
@@ -47,10 +55,15 @@ function UserDetailsPage() {
     }
   };
 
+  const { data: userPets, isPending: petsLoading } = useQuery({
+    queryKey: ["userPets", user?.id],
+    queryFn: () => getUserPets(user?.id ?? null),
+  });
+
   if (isPending || !user) return <div>Loading...</div>;
   return (
     <>
-      <div className="font-inter flex w-full flex-col items-start p-4 text-base">
+      <div className="font-inter flex w-full flex-col items-start gap-4 p-4 text-base">
         <div className="flex w-full items-start gap-16">
           {userAvatar ? (
             <img
@@ -78,7 +91,10 @@ function UserDetailsPage() {
                           colSpan={2}
                           className="font-sora rounded-md border-b border-gray-300 px-4 py-2 text-left font-semibold text-gray-700"
                         >
-                          Details
+                          <div className="flex items-center gap-2">
+                            <FontAwesomeIcon icon={faUser} />
+                            Details
+                          </div>
                         </th>
                       </tr>
                     </thead>
@@ -197,6 +213,60 @@ function UserDetailsPage() {
               </IconButton>
             </div>
           </div>
+        </div>
+
+        <div className="w-full rounded-md border border-gray-300">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-300 bg-gray-100">
+                <td
+                  colSpan={5}
+                  className="font-sora px-4 py-2 text-xl font-semibold text-gray-700"
+                >
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon icon={faPaw} className="-rotate-12" />
+                    Pets
+                  </div>
+                </td>
+              </tr>
+              <tr className="w-full rounded-sm bg-gray-100">
+                <th className="px-4 text-left">ID</th>
+                <th className="text-left">Name</th>
+                <th className="text-left">Species</th>
+                <th className="text-left">Status</th>
+                <th className="text-left">Date Registered</th>
+              </tr>
+            </thead>
+            <tbody>
+              {petsLoading ? (
+                <tr>
+                  <td>Loading...</td>
+                </tr>
+              ) : (
+                userPets?.map((pet) => (
+                  <tr
+                    onClick={() => {
+                      navigate(`/pet-management/${pet.public_id}`);
+                    }}
+                    key={pet.public_id}
+                    className="cursor-pointer border-b border-gray-300 px-4 transition-colors duration-75 hover:bg-gray-100"
+                  >
+                    <td className="flex gap-2 px-4 py-2">{pet.public_id}</td>
+                    <td>{pet.name}</td>
+                    <td className="capitalize">{pet.pet_type}</td>
+                    <td>
+                      <div className="flex">
+                        <StatusBadge status={pet.status?.name}>
+                          {pet.status?.name}
+                        </StatusBadge>
+                      </div>
+                    </td>
+                    <td>{formatJoinedDate(new Date(pet.created_at))}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </>
