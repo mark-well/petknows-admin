@@ -69,13 +69,13 @@ function LoginPage() {
                   type="email"
                   placeholder="Email"
                   {...register("email", { required: true })}
-                  className={`${formErrors.email ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
+                  className={`${formErrors.email ? "border-b-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
                 />
                 <input
                   type="password"
                   placeholder="Password"
                   {...register("password", { required: true })}
-                  className={`${formErrors.password ? "border-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
+                  className={`${formErrors.password ? "border-b-2 border-red-300" : "border-gray-300"} border-b-2 outline-none`}
                 />
               </div>
               <input

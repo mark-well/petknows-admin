@@ -5,4 +5,4 @@ export type SigninInputs = {
   password: string;
 };
 
-export type UserRoles = Database["public"]["Enums"]["user_roles"];
+export type UserRoles = Database["public"]["Enums"]["user_roles"] | undefined;

@@ -9,6 +9,8 @@ import UserManagementPage from "../features/user-management/pages/UserManagement
 import AnalyticsPage from "../features/analytics/pages/AnalyticsPage";
 import PetDetailsPage from "../features/pet-management/pages/PetDetailsPage";
 import UserDetailsPage from "../features/user-management/pages/UserDetailsPage";
+import AdminManagementPage from "../features/admin-management/pages/AdminManagementPage";
+import MaoManagementPage from "../features/mao-management/pages/MaoManagementPage";
 
 export const router = createBrowserRouter([
   { path: "login", Component: LoginPage },
@@ -23,6 +25,8 @@ export const router = createBrowserRouter([
       { path: "pet-management/:petId", Component: PetDetailsPage },
       { path: "user-management", Component: UserManagementPage },
       { path: "user-management/:userId", Component: UserDetailsPage },
+      { path: "admin-management", Component: AdminManagementPage },
+      { path: "mao-management", Component: MaoManagementPage },
       { path: "analytics", Component: AnalyticsPage },
     ],
   },

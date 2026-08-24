@@ -2,16 +2,21 @@ import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faChartColumn,
   faChartLine,
+  faHouse,
   faPaw,
   faUser,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router";
+import type { UserRoles } from "../../auth/types";
+import { useAuth } from "../../auth/providers/useAuth";
 
 type SidebarItem = {
   label: string;
   path: string;
   icon: IconProp;
+  allowed_roles: UserRoles[];
 };
 
 const navigations: SidebarItem[] = [
@@ -19,25 +24,47 @@ const navigations: SidebarItem[] = [
     label: "Dashboard",
     path: "/",
     icon: faChartColumn,
+    allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "Pet Management",
     path: "/pet-management",
     icon: faPaw,
+    allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "User Management",
     path: "/user-management",
     icon: faUser,
+    allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "Analytics",
     path: "/analytics",
     icon: faChartLine,
+    allowed_roles: ["admin", "super_admin"],
+  },
+  {
+    label: "Admin Management",
+    path: "/admin-management",
+    icon: faUsers,
+    allowed_roles: ["super_admin"],
+  },
+  {
+    label: "MAO Management",
+    path: "/mao-management",
+    icon: faHouse,
+    allowed_roles: ["super_admin"],
   },
 ];
 
 function Sidebar() {
+  const { userRole } = useAuth();
+
+  const visibleNavs = navigations.filter((nav) =>
+    nav.allowed_roles.includes(userRole),
+  );
+
   return (
     <>
       <aside className="w-68 max-w-68 border-r-2 border-gray-300 p-2">
@@ -45,7 +72,7 @@ function Sidebar() {
           <p className="text-gray-600">Main Menu</p>
         </div>
         <nav className="flex flex-col">
-          {navigations.map((item: SidebarItem) => (
+          {visibleNavs.map((item: SidebarItem) => (
             <NavLink
               key={item.path}
               to={item.path}
