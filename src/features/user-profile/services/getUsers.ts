@@ -3,17 +3,7 @@ import { supabase } from "../../../utils/supabase";
 export async function getUsers() {
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      `
-      id,
-      public_id,
-      first_name,
-      last_name,
-      email,
-      role,
-      created_at
-    `,
-    )
+    .select("*")
     .neq("role", "admin")
     .neq("role", "super_admin")
     .order("created_at", { ascending: false });
@@ -25,17 +15,7 @@ export async function getUsers() {
 export async function getUsersAdmins() {
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      `
-      id,
-      public_id,
-      first_name,
-      last_name,
-      email,
-      role,
-      created_at
-    `,
-    )
+    .select("*")
     .order("created_at", { ascending: false });
 
   if (error) throw error;

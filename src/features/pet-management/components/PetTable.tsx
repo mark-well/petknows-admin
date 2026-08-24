@@ -3,15 +3,16 @@ import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 import { useNavigate } from "react-router";
 import usePetList from "../hooks/petList";
 import StatusBadge from "./StatusBadge";
+import type { Pet } from "../types";
 
 interface Props {
   usePetList: ReturnType<typeof usePetList>;
+  filteredPets: Pet[] | null;
 }
 
-function PetTable({ usePetList }: Props) {
+function PetTable({ usePetList, filteredPets }: Props) {
   const navigate = useNavigate();
   const {
-    allPets,
     petsLoading,
     allSelected,
     selectedPets,
@@ -54,7 +55,7 @@ function PetTable({ usePetList }: Props) {
                 <td>Loading...</td>
               </tr>
             ) : (
-              allPets?.map((pet) => (
+              filteredPets?.map((pet) => (
                 <tr
                   onClick={() => {
                     navigate(`/pet-management/${pet.public_id}`);

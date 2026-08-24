@@ -6,10 +6,16 @@ import usePetList from "../hooks/petList";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import deletePets from "../services/deletePets";
 import type { Pet } from "../types";
+import { useEffect, useState } from "react";
 
 function PetManagementPage() {
   const petList = usePetList();
   const queryClient = useQueryClient();
+  const [filteredPets, setFilteredPets] = useState<Pet[] | undefined>();
+
+  useEffect(() => {
+    setFilteredPets(petList.allPets ?? undefined);
+  }, [petList.allPets]);
 
   const deletePetMutation = useMutation({
     mutationFn: (selectedPet: Set<Pet>) => deletePets(selectedPet),
@@ -36,6 +42,24 @@ function PetManagementPage() {
     deletePetMutation.mutate(petList.selectedPets);
   };
 
+  const handlePetSearch = (
+    event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
+  ) => {
+    const value = event.target.value.toLowerCase().trim();
+
+    const filtered = petList.allPets?.filter(
+      (pet) =>
+        pet.public_id.toLowerCase().includes(value) ||
+        pet.name?.toLowerCase().includes(value) ||
+        pet.pet_type?.toLowerCase().includes(value) ||
+        pet.status?.name?.toLowerCase().includes(value) ||
+        pet.profiles?.first_name?.toLowerCase().includes(value) ||
+        pet.profiles?.last_name?.toLowerCase().includes(value),
+    );
+
+    setFilteredPets(filtered);
+  };
+
   return (
     <>
       <Helmet>
@@ -60,13 +84,14 @@ function PetManagementPage() {
               type="text"
               placeholder="Search here..."
               className="focus:border-secondary rounded-sm border border-gray-300 px-4 outline-none"
+              onChange={(e) => handlePetSearch(e)}
             />
             <IconButton icon={faPlus}>Add New</IconButton>
           </div>
         </div>
 
         <div>
-          <PetTable usePetList={petList} />
+          <PetTable usePetList={petList} filteredPets={filteredPets ?? null} />
         </div>
       </div>
     </>

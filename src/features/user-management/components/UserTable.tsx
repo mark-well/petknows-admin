@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router";
 import Checkbox from "../../../shared/components/Checkbox";
 import useUsersList from "../hooks/userUsersList";
+import type { UserProfile } from "../../user-profile/types";
 
 interface Props {
   useUserList: ReturnType<typeof useUsersList>;
+  filteredUsers: UserProfile[] | undefined;
 }
 
-function UserTable({ useUserList }: Props) {
+function UserTable({ useUserList, filteredUsers }: Props) {
   const {
-    allUsers,
     usersLoading,
     selectedUserIds,
     allSelected,
@@ -42,7 +43,7 @@ function UserTable({ useUserList }: Props) {
                 <td>Loading...</td>
               </tr>
             ) : (
-              allUsers?.map((user) => (
+              filteredUsers?.map((user) => (
                 <tr
                   onClick={() => {
                     navigate(`/user-management/${user.public_id}`);
