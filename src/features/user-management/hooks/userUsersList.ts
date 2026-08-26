@@ -6,7 +6,7 @@ import { useAuth } from "../../../auth/providers/useAuth";
 export default function useUsersList() {
   const { userRole } = useAuth();
 
-  const { data: allUsers, isPending: usersLoading } = useQuery({
+  const { data: allUsers, isPending: usersLoading, refetch } = useQuery({
     queryKey: ["users", userRole],
     queryFn: () => {
       if (userRole === "super_admin") {
@@ -23,7 +23,7 @@ export default function useUsersList() {
   const allSelected =
     !!allUsers?.length &&
     allUsers
-      .filter((user) => user.role !== "super_admin")
+      .filter((user) => user.role === "user")
       .every((user) => selectedUserIds.has(user.id));
 
   const toggleUserSelection = (userId: string, checked: boolean) => {
@@ -39,7 +39,7 @@ export default function useUsersList() {
       checked
         ? new Set(
             allUsers
-              ?.filter((user) => user.role !== "super_admin")
+              ?.filter((user) => user.role === "user")
               .map((user) => user.id),
           )
         : new Set(),
@@ -50,6 +50,10 @@ export default function useUsersList() {
     setSelectedUserIds(new Set());
   };
 
+  const refreshUsers = () => {
+    refetch();
+  }
+
   return {
     allUsers,
     usersLoading,
@@ -58,5 +62,6 @@ export default function useUsersList() {
     clearSelectedUsers,
     toggleSelectAll,
     toggleUserSelection,
+    refreshUsers
   };
 }

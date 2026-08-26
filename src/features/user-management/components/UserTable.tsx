@@ -53,7 +53,7 @@ function UserTable({ useUserList, filteredUsers }: Props) {
                 >
                   <td className={`flex gap-2 px-4 py-1`}>
                     <div onClick={(e) => e.stopPropagation()}>
-                      {user.role !== "super_admin" && (
+                      {user.role === "user" && (
                         <Checkbox
                           checked={selectedUserIds.has(user.id)}
                           onChange={(checked) =>

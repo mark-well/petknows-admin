@@ -5,6 +5,9 @@ import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import useUsersList from "../hooks/userUsersList";
 import { useEffect, useState } from "react";
 import type { UserProfile } from "../../user-profile/types";
+import { useMutation } from "@tanstack/react-query";
+import deleteUserAccount from "../services/deleteUserAccount";
+import { queryClient } from "../../../app/queryClient";
 
 function UserManagementPage() {
   const userList = useUsersList();
@@ -15,6 +18,35 @@ function UserManagementPage() {
   useEffect(() => {
     setFilteredUsers(userList.allUsers ?? undefined);
   }, [userList.allUsers]);
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (selectedUserIds: Set<string>) =>
+      deleteUserAccount(selectedUserIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      userList.refreshUsers();
+      userList.clearSelectedUsers();
+      alert("Delete success");
+    },
+    onError: (e: Error) => {
+      console.error(e.message);
+    },
+  });
+
+  const handleDeleteUser = () => {
+    if (userList.selectedUserIds.size === 0) {
+      alert("No selected user");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Are you sure you want to delete this account/s? This action cannot be undone.",
+    );
+    if (!confirmed) return;
+
+    //Delete user/s
+    deleteUserMutation.mutate(userList.selectedUserIds);
+  };
 
   const handleUserSearch = (
     event: React.ChangeEvent<HTMLInputElement, HTMLInputElement>,
@@ -40,7 +72,12 @@ function UserManagementPage() {
         <h2 className="font-sora text-2xl font-semibold">Manage Users</h2>
         <div className="top-toolbar flex justify-between">
           <div className="flex items-center gap-x-2">
-            <IconButton icon={faTrash} variant="danger" className="h-full">
+            <IconButton
+              icon={faTrash}
+              variant="danger"
+              className="h-full"
+              onClick={handleDeleteUser}
+            >
               Delete
             </IconButton>
             <p className="text-xl font-semibold">{`${userList.selectedUserIds.size}/${userList.allUsers?.length}`}</p>
