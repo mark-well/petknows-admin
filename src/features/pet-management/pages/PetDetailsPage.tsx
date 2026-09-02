@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import getSinglePet from "../services/getSinglePet";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
-import { getPetImage } from "../services";
+import { getPetImage, getPetImageBytes, toVectorLiteral } from "../services";
 import IconButton from "../../../shared/components/IconButton";
 import {
+  faArrowRotateLeft,
   faChevronRight,
   faCopy,
   faPen,
@@ -18,6 +19,8 @@ import type { Pet, PetUpdateType } from "../types";
 import updatePet from "../services/updatePet";
 import { queryClient } from "../../../app/queryClient";
 import copyText from "../../../utils/copyText";
+import getPetEmbedding from "../services/getPetEmbedding";
+import { supabase } from "../../../utils/supabase";
 
 function PetDetailsPage() {
   const params = useParams();
@@ -69,6 +72,25 @@ function PetDetailsPage() {
     updatePetMutation.mutate({ petId: pet?.id, updated: updatedData });
   };
 
+  const handleUpdateEmbedding = async () => {
+    // try {
+    //   if (!pet) throw new Error("No pet");
+    //   const imageBytes = await getPetImageBytes(pet.avatar_url ?? null);
+    //   const newEmbedding = await getPetEmbedding(imageBytes);
+    //   const { error } = await supabase.from("pet_images").insert({
+    //     pet_id: pet?.id,
+    //     embedding: toVectorLiteral(newEmbedding.embedding),
+    //     model_version: newEmbedding.model_version,
+    //     image_url: pet.avatar_url,
+    //   });
+    //   if (error) throw error;
+    //   alert("Emedding updated");
+    // } catch (e) {
+    //   console.error(e);
+    //   alert("Error updating embedding, check console.");
+    // }
+  };
+
   const resetValueToDefault = (
     e: React.FocusEvent<HTMLInputElement, Element>,
   ) => {
@@ -86,13 +108,21 @@ function PetDetailsPage() {
     <>
       <div className="font-inter flex w-full flex-col items-start p-4 text-base">
         <div className="flex w-full items-start gap-16">
-          <img
-            src={petImageUrl?.publicUrl}
-            alt="Pet Image"
-            width="416"
-            height="416"
-            className="aspect-square rounded-md object-cover shadow-md"
-          />
+          <div className="flex flex-col gap-4">
+            <img
+              src={petImageUrl?.publicUrl}
+              alt="Pet Image"
+              width="416"
+              height="416"
+              className="aspect-square rounded-md object-cover shadow-md"
+            />
+            <IconButton
+              icon={faArrowRotateLeft}
+              onClick={handleUpdateEmbedding}
+            >
+              Update Embeddings
+            </IconButton>
+          </div>
 
           <div className="flex flex-1 flex-col gap-8">
             {/* Pet Details */}

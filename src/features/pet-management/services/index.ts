@@ -25,3 +25,15 @@ export function getPetImage(url: string | null) {
   const { data } = supabase.storage.from("pet_avatars").getPublicUrl(url);
   return data;
 }
+
+export async function getPetImageBytes(url: string | null) {
+  if (!url) throw new Error("No url");
+  const { data, error } = await supabase.storage.from("pet_avatars").download(url);
+  
+  if(error) throw error;
+  return data;
+}
+
+export function toVectorLiteral(embedding: number[]): string {
+  return `[${embedding.join(",")}]`;
+}
