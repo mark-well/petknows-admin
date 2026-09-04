@@ -3,13 +3,12 @@ import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import getSinglePet from "../services/getSinglePet";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
-import { getPetImage, getPetImageBytes, toVectorLiteral } from "../services";
 import IconButton from "../../../shared/components/IconButton";
 import {
-  faArrowRotateLeft,
   faChevronRight,
   faCopy,
   faPen,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import StatusBadge from "../components/StatusBadge";
@@ -19,8 +18,7 @@ import type { Pet, PetUpdateType } from "../types";
 import updatePet from "../services/updatePet";
 import { queryClient } from "../../../app/queryClient";
 import copyText from "../../../utils/copyText";
-import getPetEmbedding from "../services/getPetEmbedding";
-import { supabase } from "../../../utils/supabase";
+import PetImages from "../components/PetImages";
 
 function PetDetailsPage() {
   const params = useParams();
@@ -39,12 +37,6 @@ function PetDetailsPage() {
       reset(pet);
     }
   }, [pet]);
-
-  const { data: petImageUrl } = useQuery({
-    queryKey: ["petImage", petId],
-    queryFn: () => getPetImage(pet?.avatar_url ?? null),
-    enabled: !!pet,
-  });
 
   const updatePetMutation = useMutation({
     mutationFn: ({
@@ -72,25 +64,6 @@ function PetDetailsPage() {
     updatePetMutation.mutate({ petId: pet?.id, updated: updatedData });
   };
 
-  const handleUpdateEmbedding = async () => {
-    // try {
-    //   if (!pet) throw new Error("No pet");
-    //   const imageBytes = await getPetImageBytes(pet.avatar_url ?? null);
-    //   const newEmbedding = await getPetEmbedding(imageBytes);
-    //   const { error } = await supabase.from("pet_images").insert({
-    //     pet_id: pet?.id,
-    //     embedding: toVectorLiteral(newEmbedding.embedding),
-    //     model_version: newEmbedding.model_version,
-    //     image_url: pet.avatar_url,
-    //   });
-    //   if (error) throw error;
-    //   alert("Emedding updated");
-    // } catch (e) {
-    //   console.error(e);
-    //   alert("Error updating embedding, check console.");
-    // }
-  };
-
   const resetValueToDefault = (
     e: React.FocusEvent<HTMLInputElement, Element>,
   ) => {
@@ -107,24 +80,30 @@ function PetDetailsPage() {
   return (
     <>
       <div className="font-inter flex w-full flex-col items-start p-4 text-base">
-        <div className="flex w-full items-start gap-16">
-          <div className="flex flex-col gap-4">
-            <img
-              src={petImageUrl?.publicUrl}
-              alt="Pet Image"
-              width="416"
-              height="416"
-              className="aspect-square rounded-md object-cover shadow-md"
-            />
-            <IconButton
-              icon={faArrowRotateLeft}
-              onClick={handleUpdateEmbedding}
-            >
-              Update Embeddings
-            </IconButton>
+        <div className="flex w-full items-start gap-4">
+          <div className="flex min-w-0 flex-1 flex-row flex-wrap justify-center gap-4">
+            <PetImages petId={pet.id} petAvatarUrl={pet.avatar_url ?? ""} />
+            <div className="flex w-full flex-row items-center gap-2">
+              <div className="h-px w-full bg-gray-300" />
+              <span className="text-base text-gray-700">Description</span>
+              <div className="h-px w-full bg-gray-300" />
+            </div>
+            {pet.description ? (
+              <div>
+                <div>
+                  <p className="text-justify indent-4 text-base text-gray-700">
+                    {pet.description}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-lg font-semibold text-gray-500">
+                No Description
+              </p>
+            )}
           </div>
 
-          <div className="flex flex-1 flex-col gap-8">
+          <div className="flex min-w-0 flex-2 flex-col gap-8">
             {/* Pet Details */}
             <div className="flex flex-col items-end gap-4">
               <div className="w-full overflow-hidden rounded-md border border-gray-300">
@@ -224,9 +203,14 @@ function PetDetailsPage() {
                   </table>
                 </form>
               </div>
-              <IconButton icon={faPen} onClick={handleSubmit(onSubmitUpdate)}>
-                Update
-              </IconButton>
+              <div className="flex gap-4">
+                <IconButton icon={faTrash} variant="danger">
+                  Delete
+                </IconButton>
+                <IconButton icon={faPen} onClick={handleSubmit(onSubmitUpdate)}>
+                  Update
+                </IconButton>
+              </div>
             </div>
 
             {/* User Details */}

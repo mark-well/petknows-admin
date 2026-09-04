@@ -249,6 +249,7 @@ export type Database = {
         Row: {
           created_at: string
           embedding: string | null
+          folder_id: string | null
           id: string
           image_url: string | null
           model_version: string
@@ -257,6 +258,7 @@ export type Database = {
         Insert: {
           created_at?: string
           embedding?: string | null
+          folder_id?: string | null
           id?: string
           image_url?: string | null
           model_version: string
@@ -265,6 +267,7 @@ export type Database = {
         Update: {
           created_at?: string
           embedding?: string | null
+          folder_id?: string | null
           id?: string
           image_url?: string | null
           model_version?: string
@@ -305,6 +308,7 @@ export type Database = {
           color: string | null
           created_at: string
           date_registered: string | null
+          description: string | null
           embedding: string | null
           id: string
           name: string | null
@@ -320,6 +324,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           date_registered?: string | null
+          description?: string | null
           embedding?: string | null
           id?: string
           name?: string | null
@@ -335,6 +340,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           date_registered?: string | null
+          description?: string | null
           embedding?: string | null
           id?: string
           name?: string | null

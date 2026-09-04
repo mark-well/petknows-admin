@@ -7,6 +7,7 @@ export const queryPet = `
       avatar_url,
       breed,
       color,
+      description,
       status:pet_status(name),
       profiles(public_id, first_name, last_name, email, user_contact(number))
     `;
