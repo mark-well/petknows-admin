@@ -1,29 +1,21 @@
-import deleteImageFromBucket from "../../../shared/services/deleteImageFromBucket";
 import { supabase } from "../../../utils/supabase";
 import type { Pet } from "../types";
+import deletePetImageService from "./deletePetImageService";
+import getPetImagesRecord from "./getPetImagesRecord";
 
-export default async function (pets: Set<Pet>) {
+export default async function deletePets(pets: Set<Pet>) {
   if (pets.size === 0) throw new Error("No pets to delete");
 
-  const { data, error } = await supabase
-    .from("pets")
-    .delete()
-    .in(
-      "id",
-      [...pets].map((pet) => pet.id),
-    )
-    .select();
-  if (error) throw error;
+  const petIds = [...pets].map(pet => pet.id);
+  const petImagesRecord = await getPetImagesRecord(petIds);
+  const imageUrls = petImagesRecord.map(record => record.image_url).filter((url): url is string => url !== null);
 
-  // Delete pet image
-  try {
-    deleteImageFromBucket(
-      "pet_avatars",
-      [...data]
-        .map((pet) => pet.avatar_url)
-        .filter((avatar_url) => avatar_url !== null),
-    );
-  } catch (e) {
-    throw e;
+  // Delete the pet
+  const {error} = await supabase.from("pets").delete().in("id", petIds);
+  if(error) throw error;
+
+  // Delete the pet images
+  if(imageUrls.length > 0) {
+    await deletePetImageService(imageUrls);
   }
 }

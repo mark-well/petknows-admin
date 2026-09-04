@@ -3,32 +3,20 @@ import IconButton from "../../../shared/components/IconButton";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import PetTable from "../components/PetTable";
 import usePetList from "../hooks/petList";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import deletePets from "../services/deletePets";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Pet } from "../types";
 import { useEffect, useState } from "react";
+import useDeletePets from "../hooks/useDeletePets";
 
 function PetManagementPage() {
   const petList = usePetList();
   const queryClient = useQueryClient();
   const [filteredPets, setFilteredPets] = useState<Pet[] | undefined>();
+  const deletePetMutation = useDeletePets();
 
   useEffect(() => {
     setFilteredPets(petList.allPets ?? undefined);
   }, [petList.allPets]);
-
-  const deletePetMutation = useMutation({
-    mutationFn: (selectedPet: Set<Pet>) => deletePets(selectedPet),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["maoPets"] });
-      alert("Delete success");
-      petList.refreshPets();
-      petList.clearSelectedPetIds();
-    },
-    onError: (e) => {
-      alert(e.message);
-    },
-  });
 
   const handleDeletePet = () => {
     if (petList.selectedPets.size === 0) {
@@ -39,7 +27,15 @@ function PetManagementPage() {
     const confirmed = confirm("Are you sure you want to delete the pets?");
     if (!confirmed) return;
 
-    deletePetMutation.mutate(petList.selectedPets);
+    deletePetMutation.mutate(petList.selectedPets, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["maoPets"] });
+        alert("Delete success");
+      },
+      onError: (e) => {
+        alert(e.message);
+      },
+    });
   };
 
   const handlePetSearch = (

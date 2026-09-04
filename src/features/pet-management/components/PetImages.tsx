@@ -16,7 +16,7 @@ export default function PetImages({ petId, petAvatarUrl }: Props) {
 
   const { data: petImagesRecord } = useQuery({
     queryKey: ["petImagesRecord", petId],
-    queryFn: () => getPetImagesRecord(petId!),
+    queryFn: () => getPetImagesRecord([petId]!),
     enabled: Boolean(petId),
   });
 

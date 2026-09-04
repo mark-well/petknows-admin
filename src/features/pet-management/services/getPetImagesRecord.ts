@@ -1,7 +1,7 @@
 import { supabase } from "../../../utils/supabase";
 
-export default async function getPetImagesRecord(petId: string) {
-  const {data, error} = await supabase.from("pet_images").select("*").eq("pet_id", petId);
+export default async function getPetImagesRecord(petIds: string[]) {
+  const {data, error} = await supabase.from("pet_images").select("*").in("pet_id", petIds);
 
   if(error) throw error;
   return data;

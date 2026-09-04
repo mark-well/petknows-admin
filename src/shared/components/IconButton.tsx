@@ -6,6 +6,7 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
   icon: IconProp;
   variant?: "primary" | "danger";
   onClick?: () => void;
+  disabled?: boolean;
 }
 
 function IconButton({
@@ -14,16 +15,18 @@ function IconButton({
   onClick,
   children,
   className,
+  disabled = false,
 }: Props) {
   if (variant === "danger") {
     return (
       <>
         <button
           className={cn(
-            "flex items-center justify-center gap-x-2 rounded-md bg-red-400 px-3 py-2 text-base text-white transition-colors duration-75 hover:bg-red-300",
+            `flex cursor-pointer items-center justify-center gap-x-2 rounded-md ${disabled ? "bg-gray-400" : "bg-red-400"} px-3 py-2 text-base text-white transition-colors duration-75 ${disabled ? "bg-gray-300" : "hover:bg-red-300"}`,
             className,
           )}
           onClick={onClick}
+          disabled={disabled}
         >
           <FontAwesomeIcon icon={icon} size="sm" />
           {children}
@@ -36,10 +39,11 @@ function IconButton({
     <>
       <button
         className={cn(
-          "bg-accent flex items-center justify-center gap-x-2 rounded-md px-3 py-2 text-base text-white transition-colors duration-75 hover:bg-[hsl(0_88%_40%)]",
+          `${disabled ? "bg-gray-400" : "bg-accent"} flex cursor-pointer items-center justify-center gap-x-2 rounded-md px-3 py-2 text-base text-white transition-colors duration-75 ${disabled ? "bg-gray-300" : "hover:bg-[hsl(0_88%_40%)]"}`,
           className,
         )}
         onClick={onClick}
+        disabled={disabled}
       >
         <FontAwesomeIcon icon={icon} size="sm" />
         {children}

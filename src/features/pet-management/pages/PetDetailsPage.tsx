@@ -19,12 +19,14 @@ import updatePet from "../services/updatePet";
 import { queryClient } from "../../../app/queryClient";
 import copyText from "../../../utils/copyText";
 import PetImages from "../components/PetImages";
+import useDeletePets from "../hooks/useDeletePets";
 
 function PetDetailsPage() {
   const params = useParams();
   const petId = params.petId;
   const { register, handleSubmit, reset } = useForm<Pet>();
   const navigate = useNavigate();
+  const deletePetMutation = useDeletePets();
 
   const { data: pet, isPending } = useQuery({
     queryKey: ["singlePet", petId],
@@ -76,7 +78,22 @@ function PetDetailsPage() {
     navigate(`/user-management/${userId}`);
   };
 
-  if (isPending || !pet) return <div>Loading...</div>;
+  const handleDeletePet = () => {
+    const confirmed = confirm("Are you sure you want to delete the pets?");
+    if (!confirmed) return;
+    if (!pet) return;
+
+    deletePetMutation.mutate(new Set<Pet>([pet]), {
+      onSuccess: () => {
+        alert("Delete success");
+        navigate(-1);
+      },
+      onError: () => alert("There was an error deleting the pet"),
+    });
+  };
+
+  if (isPending) return <div>Loading...</div>;
+  if (!pet) return <div>Pet not found</div>;
   return (
     <>
       <div className="font-inter flex w-full flex-col items-start p-4 text-base">
@@ -204,10 +221,19 @@ function PetDetailsPage() {
                 </form>
               </div>
               <div className="flex gap-4">
-                <IconButton icon={faTrash} variant="danger">
+                <IconButton
+                  icon={faTrash}
+                  variant="danger"
+                  onClick={handleDeletePet}
+                  disabled={deletePetMutation.isPending}
+                >
                   Delete
                 </IconButton>
-                <IconButton icon={faPen} onClick={handleSubmit(onSubmitUpdate)}>
+                <IconButton
+                  icon={faPen}
+                  onClick={handleSubmit(onSubmitUpdate)}
+                  disabled={updatePetMutation.isPending}
+                >
                   Update
                 </IconButton>
               </div>
