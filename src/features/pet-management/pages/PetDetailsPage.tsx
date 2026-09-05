@@ -179,9 +179,7 @@ function PetDetailsPage() {
                         <td className="px-4 py-2 text-gray-500">Status:</td>
                         <td className="px-4 text-gray-700 capitalize">
                           <div className="flex">
-                            <StatusBadge status={pet.status}>
-                              {pet.status}
-                            </StatusBadge>
+                            <StatusBadge status={pet.status ?? "registered"} />
                           </div>
                         </td>
                       </tr>
