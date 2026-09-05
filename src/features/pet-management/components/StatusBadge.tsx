@@ -1,27 +1,33 @@
-import type React from "react";
+import type { Database } from "../../../shared/types/database.types";
+
+type PetStatus = Database["public"]["Enums"]["pet_status"];
+const statusConfig = {
+  registered: {
+    label: "Registered",
+    backgroundColor: "hsl(133 66% 82%)",
+    color: "hsl(133 66% 32%)",
+  },
+
+  missing: {
+    label: "Missing",
+    backgroundColor: "hsl(0 89% 82%)",
+    color: "hsl(0 89% 32%)",
+  },
+};
 
 interface Props {
-  children?: React.ReactNode;
-  status?: string | null;
+  status: PetStatus;
 }
 
-function StatusBadge({ status = "registered", children }: Props) {
-  const normalizedStatus = status?.toLowerCase() ?? "unknown";
+function StatusBadge({ status }: Props) {
+  const config = statusConfig[status];
 
-  if (normalizedStatus === "missing") {
-    return (
-      <div
-        className={`rounded-sm bg-red-100 px-2 py-1 text-center text-red-700 capitalize`}
-      >
-        {children}
-      </div>
-    );
-  }
   return (
     <div
-      className={`rounded-sm bg-green-100 px-2 py-1 text-center text-green-700 capitalize`}
+      className={`rounded-md px-2 py-1 text-center capitalize`}
+      style={{ backgroundColor: config.backgroundColor }}
     >
-      {children}
+      <p style={{ color: config.color }}>{config.label}</p>
     </div>
   );
 }

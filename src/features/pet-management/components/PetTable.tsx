@@ -76,9 +76,7 @@ function PetTable({ usePetList, filteredPets }: Props) {
                   <td className="capitalize">{pet.pet_type}</td>
                   <td>
                     <div className="flex">
-                      <StatusBadge status={pet.status?.name}>
-                        {pet.status?.name}
-                      </StatusBadge>
+                      <StatusBadge status={pet.status ?? "registered"} />
                     </div>
                   </td>
                   <td>{formatJoinedDate(new Date(pet.created_at))}</td>

@@ -8,6 +8,6 @@ export const queryPet = `
       breed,
       color,
       description,
-      status:pet_status(name),
+      status,
       profiles(public_id, first_name, last_name, email, user_contact(number))
     `;

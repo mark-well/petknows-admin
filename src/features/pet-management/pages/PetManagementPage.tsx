@@ -48,7 +48,7 @@ function PetManagementPage() {
         pet.public_id.toLowerCase().includes(value) ||
         pet.name?.toLowerCase().includes(value) ||
         pet.pet_type?.toLowerCase().includes(value) ||
-        pet.status?.name?.toLowerCase().includes(value) ||
+        pet.status?.toLowerCase().includes(value) ||
         pet.profiles?.first_name?.toLowerCase().includes(value) ||
         pet.profiles?.last_name?.toLowerCase().includes(value),
     );
