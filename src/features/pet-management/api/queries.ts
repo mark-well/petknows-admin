@@ -9,5 +9,5 @@ export const queryPet = `
       color,
       description,
       status,
-      profiles(public_id, first_name, last_name, email, user_contact(number))
+      profiles(public_id, first_name, last_name, email, contact_number)
     `;
