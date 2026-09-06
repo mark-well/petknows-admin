@@ -4,6 +4,7 @@ import { getUserProfile } from "../../user-profile/services/getUserProfile";
 import { getUserAvatar } from "../../user-profile/services";
 import IconButton from "../../../shared/components/IconButton";
 import {
+  faClose,
   faCopy,
   faPaw,
   faPen,
@@ -12,18 +13,21 @@ import {
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copyText from "../../../utils/copyText";
-import { useForm } from "react-hook-form";
-import type { UserProfile } from "../../user-profile/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import getUserAddress from "../../user-profile/services/getUserAddress";
 import getUserPets from "../../pet-management/services/getUserPets";
 import StatusBadge from "../../pet-management/components/StatusBadge";
+import useUpdateUser from "../../user-profile/hooks/useUpdateUser";
+import type { UserSex } from "../../user-profile/types";
 
 function UserDetailsPage() {
   const params = useParams();
   const userPublicId = params.userId;
-  const { register, reset } = useForm<UserProfile>();
+  const { setUserId, register, handleSubmit, submit, reset, updating } =
+    useUpdateUser();
   const navigate = useNavigate();
+  const userSex: UserSex[] = ["Male", "Female", "Other"];
+  const [editDetails, setEditDetails] = useState<boolean>(false);
 
   const { data: user, isPending } = useQuery({
     queryKey: ["singleUser", userPublicId],
@@ -32,7 +36,16 @@ function UserDetailsPage() {
 
   useEffect(() => {
     if (user) {
-      reset(user);
+      reset({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        birth_date: user.birth_date,
+        email: user.email,
+        contact_number: user.contact_number,
+        sex: user.sex,
+      });
+
+      setUserId(user.id);
     }
   }, [user]);
 
@@ -59,6 +72,18 @@ function UserDetailsPage() {
     queryKey: ["userPets", user?.id],
     queryFn: () => getUserPets(user?.id ?? null),
   });
+
+  const toggleEditDetails = () => {
+    if (editDetails) {
+      setEditDetails(false);
+    } else {
+      setEditDetails(true);
+    }
+  };
+
+  const handleUpdate = () => {
+    handleSubmit((data) => submit(data))();
+  };
 
   if (isPending || !user) return <div>Loading...</div>;
   return (
@@ -91,9 +116,26 @@ function UserDetailsPage() {
                           colSpan={2}
                           className="font-sora rounded-md border-b border-gray-300 px-4 py-2 text-left font-semibold text-gray-700"
                         >
-                          <div className="flex items-center gap-2">
-                            <FontAwesomeIcon icon={faUser} />
-                            Details
+                          <div className="flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <FontAwesomeIcon icon={faUser} />
+                              Details
+                            </div>
+                            {editDetails ? (
+                              <FontAwesomeIcon
+                                icon={faClose}
+                                size="lg"
+                                onClick={() => toggleEditDetails()}
+                                className="text-accent rounded-sm p-1 transition-colors duration-100 hover:bg-red-200"
+                              />
+                            ) : (
+                              <FontAwesomeIcon
+                                icon={faPen}
+                                size="lg"
+                                onClick={() => toggleEditDetails()}
+                                className="rounded-sm p-1 transition-colors duration-100 hover:bg-gray-300"
+                              />
+                            )}
                           </div>
                         </th>
                       </tr>
@@ -119,8 +161,9 @@ function UserDetailsPage() {
                         <td className="px-4 text-gray-700">
                           <input
                             {...register("first_name", { required: true })}
-                            className="w-full"
+                            className="w-full outline-hidden"
                             onBlur={(e) => resetValueToDefault(e)}
+                            readOnly={!editDetails}
                           />
                         </td>
                       </tr>
@@ -130,8 +173,9 @@ function UserDetailsPage() {
                         <td className="px-4 text-gray-700">
                           <input
                             {...register("last_name", { required: true })}
-                            className="w-full capitalize"
+                            className="w-full capitalize outline-hidden"
                             onBlur={(e) => resetValueToDefault(e)}
+                            readOnly={!editDetails}
                           />
                         </td>
                       </tr>
@@ -140,10 +184,12 @@ function UserDetailsPage() {
                         <td className="px-4 py-2 text-gray-500">Birth Date:</td>
                         <td className="px-4 text-gray-700">
                           <input
-                            {...register("birth_date", { required: true })}
-                            className="w-full capitalize"
+                            {...register("birth_date")}
+                            className="w-full outline-hidden"
                             onBlur={(e) => resetValueToDefault(e)}
                             placeholder="YYYY-MM-DD"
+                            type="date"
+                            readOnly={!editDetails}
                           />
                         </td>
                       </tr>
@@ -151,9 +197,45 @@ function UserDetailsPage() {
                       <tr className="border-b border-gray-300">
                         <td className="px-4 py-2 text-gray-500">Sex:</td>
                         <td className="px-4 text-gray-700">
+                          {editDetails ? (
+                            <select {...register("sex")}>
+                              <option value={""}>
+                                -- Please select your sex --
+                              </option>
+                              {userSex.map((sex) => (
+                                <option key={sex} value={sex}>
+                                  {sex}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <input
+                              {...register("sex")}
+                              className="w-full outline-hidden"
+                              onBlur={(e) => resetValueToDefault(e)}
+                              readOnly={!editDetails}
+                            />
+                          )}
+                        </td>
+                      </tr>
+
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Email:</td>
+                        <td className="px-4 text-gray-700">
                           <input
-                            {...register("sex", { required: true })}
-                            className="w-full capitalize"
+                            {...register("email", { required: true })}
+                            className="w-full outline-hidden"
+                            onBlur={(e) => resetValueToDefault(e)}
+                          />
+                        </td>
+                      </tr>
+
+                      <tr className="border-b border-gray-300">
+                        <td className="px-4 py-2 text-gray-500">Phone:</td>
+                        <td className="px-4 text-gray-700">
+                          <input
+                            {...register("contact_number")}
+                            className="w-full outline-hidden"
                             onBlur={(e) => resetValueToDefault(e)}
                           />
                         </td>
@@ -171,28 +253,8 @@ function UserDetailsPage() {
                       </tr>
 
                       <tr className="border-b border-gray-300">
-                        <td className="px-4 py-2 text-gray-500">Brangay:</td>
-                        <td className="px-4 text-gray-700 capitalize">
-                          {isUserAddressLoading
-                            ? "Loading..."
-                            : `${userAddress?.address_barangay?.name}`}
-                        </td>
-                      </tr>
-
-                      <tr className="border-b border-gray-300">
                         <td className="px-4 py-2 text-gray-500">Role:</td>
                         <td className="px-4 text-gray-700">{user.role}</td>
-                      </tr>
-
-                      <tr className="border-b border-gray-300">
-                        <td className="px-4 py-2 text-gray-500">Email:</td>
-                        <td className="px-4 text-gray-700">
-                          <input
-                            {...register("email", { required: true })}
-                            className="w-full"
-                            onBlur={(e) => resetValueToDefault(e)}
-                          />
-                        </td>
                       </tr>
 
                       <tr className="border-b border-gray-300">
@@ -207,7 +269,8 @@ function UserDetailsPage() {
               </div>
               <IconButton
                 icon={faPen}
-                onClick={() => alert("Not yet implemented")}
+                onClick={handleUpdate}
+                disabled={!editDetails || updating}
               >
                 Update
               </IconButton>

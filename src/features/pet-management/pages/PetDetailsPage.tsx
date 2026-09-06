@@ -293,8 +293,8 @@ function PetDetailsPage() {
                   <tr className="border-b border-gray-300">
                     <td className="px-4 py-2 text-gray-500">Contact:</td>
                     <td className="px-4 text-gray-700 capitalize">
-                      {pet.profiles?.user_contact[0]
-                        ? "+63" + pet.profiles?.user_contact[0].number
+                      {pet.profiles?.contact_number
+                        ? "+63" + pet.profiles?.contact_number
                         : "N/A"}
                     </td>
                   </tr>
