@@ -8,6 +8,7 @@ import {
   faCopy,
   faPaw,
   faPen,
+  faTrash,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import formatJoinedDate from "../../../shared/services/formatJoinedDate";
@@ -19,12 +20,14 @@ import getUserPets from "../../pet-management/services/getUserPets";
 import StatusBadge from "../../pet-management/components/StatusBadge";
 import useUpdateUser from "../../user-profile/hooks/useUpdateUser";
 import type { UserSex } from "../../user-profile/types";
+import useDeleteAccount from "../hooks/useDeleteAccount";
 
 function UserDetailsPage() {
   const params = useParams();
   const userPublicId = params.userId;
   const { setUserId, register, handleSubmit, submit, reset, updating } =
     useUpdateUser();
+  const deleteAccount = useDeleteAccount();
   const navigate = useNavigate();
   const userSex: UserSex[] = ["Male", "Female", "Other"];
   const [editDetails, setEditDetails] = useState<boolean>(false);
@@ -83,6 +86,17 @@ function UserDetailsPage() {
 
   const handleUpdate = () => {
     handleSubmit((data) => submit(data))();
+  };
+
+  const handleDeleteUser = () => {
+    const conf = confirm("Are you sure you want to delete this account?");
+    if (!conf) return;
+
+    if (!user) throw new Error("No user id");
+    deleteAccount.mutate(new Set([user.id]), {
+      onSuccess: () => alert("Account successfully deleted!"),
+      onError: (e) => alert("Failed to delete account!: " + e),
+    });
   };
 
   if (isPending || !user) return <div>Loading...</div>;
@@ -267,13 +281,24 @@ function UserDetailsPage() {
                   </table>
                 </form>
               </div>
-              <IconButton
-                icon={faPen}
-                onClick={handleUpdate}
-                disabled={!editDetails || updating}
-              >
-                Update
-              </IconButton>
+
+              <div className="flex gap-4">
+                <IconButton
+                  icon={faTrash}
+                  variant="danger"
+                  onClick={handleDeleteUser}
+                  disabled={deleteAccount.isPending}
+                >
+                  Delete
+                </IconButton>
+                <IconButton
+                  icon={faPen}
+                  onClick={handleUpdate}
+                  disabled={!editDetails || updating}
+                >
+                  Update
+                </IconButton>
+              </div>
             </div>
           </div>
         </div>
