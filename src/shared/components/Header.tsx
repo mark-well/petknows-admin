@@ -37,7 +37,9 @@ function Header() {
               {isMaoNamePending ? (
                 <h1>Loading...</h1>
               ) : maoName ? (
-                <h1>{maoName.name} &#45; Municipal Agriculture Office</h1>
+                <h1>
+                  {maoName.office_name} &#45; Municipal Agriculture Office
+                </h1>
               ) : (
                 <h1 className="font-medium text-red-600">Super Admin</h1>
               )}

@@ -18,7 +18,7 @@ export async function getMaoName(id: string | null) {
 
   const { data, error } = await supabase
     .from("mao")
-    .select("name")
+    .select("office_name")
     .eq("id", id)
     .single();
 
