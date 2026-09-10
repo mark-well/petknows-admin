@@ -15,6 +15,7 @@ import { useAuth } from "../../auth/providers/useAuth";
 type SidebarItem = {
   label: string;
   path: string;
+  visible: boolean;
   icon: IconProp;
   allowed_roles: UserRoles[];
 };
@@ -23,36 +24,42 @@ const navigations: SidebarItem[] = [
   {
     label: "Dashboard",
     path: "/",
+    visible: true,
     icon: faChartColumn,
     allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "Pet Management",
     path: "/pet-management",
+    visible: true,
     icon: faPaw,
     allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "User Management",
     path: "/user-management",
+    visible: true,
     icon: faUser,
     allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "Analytics",
     path: "/analytics",
+    visible: false,
     icon: faChartLine,
     allowed_roles: ["admin", "super_admin"],
   },
   {
     label: "Admin Management",
     path: "/admin-management",
+    visible: true,
     icon: faUsers,
     allowed_roles: ["super_admin"],
   },
   {
     label: "MAO Management",
     path: "/mao-management",
+    visible: true,
     icon: faHouse,
     allowed_roles: ["super_admin"],
   },
@@ -72,27 +79,32 @@ function Sidebar() {
           <p className="text-gray-600">Main Menu</p>
         </div>
         <nav className="flex flex-col">
-          {visibleNavs.map((item: SidebarItem) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `group flex cursor-pointer items-center gap-x-2 rounded-sm border-l-6 p-2 transition-colors duration-75 hover:bg-[hsl(19_100_94)] ${isActive ? "border-secondary bg-[hsl(19_100_94)]" : "border-transparent"}`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <FontAwesomeIcon
-                    icon={item.icon}
-                    className={`${isActive ? "text-secondary" : "text-text"}`}
-                  />
-                  <p className={`${isActive ? "text-secondary" : "text-text"}`}>
-                    {item.label}
-                  </p>
-                </>
-              )}
-            </NavLink>
-          ))}
+          {visibleNavs.map(
+            (item: SidebarItem) =>
+              item.visible && (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `group flex cursor-pointer items-center gap-x-2 rounded-sm border-l-6 p-2 transition-colors duration-75 hover:bg-[hsl(19_100_94)] ${isActive ? "border-secondary bg-[hsl(19_100_94)]" : "border-transparent"}`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`${isActive ? "text-secondary" : "text-text"}`}
+                      />
+                      <p
+                        className={`${isActive ? "text-secondary" : "text-text"}`}
+                      >
+                        {item.label}
+                      </p>
+                    </>
+                  )}
+                </NavLink>
+              ),
+          )}
         </nav>
       </aside>
     </>
